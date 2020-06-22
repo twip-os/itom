@@ -26,13 +26,13 @@ class ItomUi:
     def __init__(
         self,
         filename,
-        *args,
         type=ui.TYPEWINDOW,
         dialogButtonBar=ui.BUTTONBAR_NO,
         dialogButtons={},
         childOfMainWindow=True,
         deleteOnClose=False,
         dockWidgetArea=ui.TOPDOCKWIDGETAREA,
+        *args,
         **kwds
     ):
         """
@@ -45,13 +45,12 @@ class ItomUi:
         """
         self.gui = ui(
             filename,
-            *args,
             type,
             dialogButtonBar,
             dialogButtons,
             childOfMainWindow,
             deleteOnClose,
-            dockWidgetArea
+            dockWidgetArea,
         )
         # this is to have s cooperative multi-inheritance structure enabled.
         super().__init__(**kwds)
@@ -89,13 +88,9 @@ class ItomUi:
                         widget.connect(s, value)
                     except:
                         print(
-                            "Auto-connection failed. Widget ",
-                            w,
-                            " has no slot ",
-                            s,
-                            "(",
-                            sig,
-                            ").",
+                            "Auto-connection failed. Widget {w} has no slot {s} ({sig})".format(
+                                w, s, sig
+                            ),
                             sep="",
                         )
 
