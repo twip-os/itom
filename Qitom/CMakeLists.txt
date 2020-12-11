@@ -278,9 +278,9 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItom.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItomMetaObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJedi.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJediRunner.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNone.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNpDataObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNumeric.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.h
@@ -505,8 +505,8 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFont.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItom.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJediRunner.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNpDataObject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNumeric.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.cpp
@@ -658,10 +658,10 @@ file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#def
 string(REGEX REPLACE ".*#define ITOM_VERSION_MAJOR[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_MAJOR ${ITOM_VERSIONS_TMP})
 string(REGEX REPLACE ".*#define ITOM_VERSION_MINOR[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_MINOR ${ITOM_VERSIONS_TMP})
 string(REGEX REPLACE ".*#define ITOM_VERSION_PATCH[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_PATCH ${ITOM_VERSIONS_TMP})
-#set(ITOM_VERSION_STRING ${ITOM_VERSION_MAJOR}.${ITOM_VERSION_MINOR}.${ITOM_VERSION_PATCH} CACHE STRING "" FORCE)
 
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_STR[ \t]+.*$")
-string(REGEX REPLACE ".*#define ITOM_VERSION_STR[ \t]+.([0-9\\.]+).*" "\\1" ITOM_VERSION_STRING ${ITOM_VERSIONS_TMP})
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSION_STR REGEX "^#define ITOM_VERSION_STR[ \t]+.*$")
+string(REGEX REPLACE ".*#define ITOM_VERSION_STR[ \t]+.([0-9\\.]+).*" "\\1" ITOM_VERSION_STRING ${ITOM_VERSION_STR})
+set(ITOM_VERSION_STRING ${ITOM_VERSION_STRING} CACHE STRING "Versionstring for itom. Parsed from ${CMAKE_CURRENT_SOURCE_DIR}/global.h")
 
 if(APPLE)
     # Set meta data for OS X bundle

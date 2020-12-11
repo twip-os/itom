@@ -440,7 +440,6 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
     int argsSize = PyTuple_Size(args);
     int nrOfParams = argsSize - 1;
     bool ok;
-    FctCallParamContainer *paramContainer;
 
     if(argsSize < 1)
     {
@@ -472,10 +471,17 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
 
     if(!loadMethodDescriptionList(self)) return NULL;
 
+
+    /*
+    Make sure paramContainer is declared above possibleMethods.
+    Or Hell will come upon you. 
+    The Voodoo gods will devour your guts.
+    Chtulhu will rise again.
+    */
+    QSharedPointer<FctCallParamContainer> paramContainer;
     //scan for method
     //step 1: check if method exists
     QList<const MethodDescription*> possibleMethods;
-
     for (int i = 0; i < self->methodList->size(); ++i)
     {
         if (self->methodList->at(i).name() == slotName)
@@ -483,7 +489,7 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
             possibleMethods.append( &(self->methodList->at(i)) );
         }
     }
-    
+
     if (possibleMethods.size() == 0)
     {
         PyErr_Format(PyExc_RuntimeError, "No slot or method with name '%s' available.", slotName.data());
@@ -491,14 +497,16 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
     }
 
     //create function container
-    paramContainer = new FctCallParamContainer(nrOfParams);
+    paramContainer = QSharedPointer<FctCallParamContainer>(new FctCallParamContainer(nrOfParams));
     void *ptr = NULL;
     int typeNr = 0;
     bool found = false;
     QByteArray possibleSignatures = "";
     const MethodDescription *foundMethod = NULL;
 
-    if (possibleMethods.count() > 1) //if more than one possible method is availabe, at first, try to strictly cast all parameters...
+    //if more than one possible method is availabe, at first, 
+    //try to strictly cast all parameters...
+    if (possibleMethods.count() > 1) 
     {
         foreach(const MethodDescription *method, possibleMethods)
         {
@@ -508,7 +516,8 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
                 for(int j=0;j<nrOfParams;j++)
                 {
                     //first try to find strict conversions only (in order to better handle methods with different possible argument types
-                    if(PythonQtConversion::PyObjToVoidPtr(PyTuple_GetItem(args,j+1), &ptr, &typeNr, method->argTypes()[j], true)) //GetItem is a borrowed reference
+                    if(PythonQtConversion::PyObjToVoidPtr(PyTuple_GetItem(args,j+1),
+                        &ptr, &typeNr, method->argTypes()[j], true)) //GetItem is a borrowed reference
                     {
                         paramContainer->setParamArg(j, ptr, typeNr);
                     }
@@ -521,7 +530,8 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
 
                 if(ok)
                 {
-                    paramContainer->initRetArg( method->retType() ); //init retArg after all other parameters fit to requirements
+                    paramContainer->initRetArg( method->retType() ); 
+                    //init retArg after all other parameters fit to requirements
 
                     found = true;
                     foundMethod = method;
@@ -540,12 +550,15 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
             }
         }
     }
-    else //... directly allow the non-strict conversion of all parameters (ok = false enters the next if case ;) )
+    else //... directly allow the non-strict conversion of all 
+        //parameters (ok = false enters the next if case ;) )
     {
         ok = false;
     }
 
-    if (!ok) //until now, there is no possibility to directly, strictly cast all parameters to available signatures. Therefore try now also to not-strictly cast
+    if (!ok) //until now, there is no possibility to directly, strictly 
+        //cast all parameters to available signatures. 
+        //Therefore try now also to not-strictly cast
     {
         foreach(const MethodDescription *method, possibleMethods)
         {
@@ -555,8 +568,10 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
                 ok = true;
                 for(int j=0;j<nrOfParams;j++)
                 {
-                    //first try to find strict conversions only (in order to better handle methods with different possible argument types
-                    if(PythonQtConversion::PyObjToVoidPtr(PyTuple_GetItem(args,j+1), &ptr, &typeNr, method->argTypes()[j], false)) //GetItem is a borrowed reference
+                    //first try to find strict conversions only (in order to better 
+                    //handle methods with different possible argument types
+                    if(PythonQtConversion::PyObjToVoidPtr(PyTuple_GetItem(args,j+1), 
+                        &ptr, &typeNr, method->argTypes()[j], false)) //GetItem is a borrowed reference
                     {
                         paramContainer->setParamArg(j, ptr, typeNr);
                     }
@@ -569,7 +584,8 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
 
                 if(ok)
                 {
-                    paramContainer->initRetArg( method->retType() ); //init retArg after all other parameters fit to requirements
+                    paramContainer->initRetArg( method->retType() ); 
+                    //init retArg after all other parameters fit to requirements
 
                     found = true;
                     foundMethod = method;
@@ -590,21 +606,34 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
 
     if(!found)
     {
-        DELETE_AND_SET_NULL(paramContainer);
+        //DELETE_AND_SET_NULL(paramContainer);
         PyErr_Format(PyExc_RuntimeError, "None of the following possible signatures fit to the given set of parameters: %s", possibleSignatures.data());
         return NULL;
     }
 
-    QSharedPointer<FctCallParamContainer> sharedParamContainer(paramContainer); //from now on, do not directly delete paramContainer any more
-    ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
+    ItomSharedSemaphoreLocker wait_for_invokation_end(new ItomSharedSemaphore());
 
     if(foundMethod->type() == QMetaMethod::Slot)
     {
-        QMetaObject::invokeMethod(uiOrga, "callSlotOrMethod", Q_ARG(bool,true), Q_ARG(uint, self->objectID), Q_ARG(int, foundMethod->methodIndex()), Q_ARG(QSharedPointer<FctCallParamContainer>, sharedParamContainer), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        QMetaObject::invokeMethod(uiOrga, "callSlotOrMethod", 
+            Q_ARG(bool,true), //slotNotMethod
+            Q_ARG(uint, self->objectID), 
+            Q_ARG(int, foundMethod->methodIndex()), 
+            Q_ARG(QSharedPointer<FctCallParamContainer>, paramContainer),
+            Q_ARG(ItomSharedSemaphore*, wait_for_invokation_end.getSemaphore())
+        ); 
     }   
     else if(foundMethod->type() == QMetaMethod::Method)
     {
-        QMetaObject::invokeMethod(uiOrga, "callSlotOrMethod", Q_ARG(bool,false), Q_ARG(uint, self->objectID), Q_ARG(int, foundMethod->methodIndex()), Q_ARG(QSharedPointer<FctCallParamContainer>, sharedParamContainer), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        QMetaObject::invokeMethod(uiOrga, "callSlotOrMethod", 
+            Q_ARG(bool,false),  //slotNotMethod
+            Q_ARG(uint, self->objectID), 
+            Q_ARG(int, foundMethod->methodIndex()), 
+            Q_ARG(QSharedPointer<FctCallParamContainer>, paramContainer),
+            Q_ARG(ItomSharedSemaphore*, wait_for_invokation_end.getSemaphore())
+        ); 
     }
     else
     {
@@ -612,19 +641,24 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
         return NULL;
     }
 
-    if(!locker2.getSemaphore()->wait(50000))
+    if(!wait_for_invokation_end.getSemaphore()->wait(50000))
     {
         PyErr_SetString(PyExc_RuntimeError, "timeout while calling slot");
         return NULL;
     }
 
-    if(PythonCommon::transformRetValToPyException( locker2.getSemaphore()->returnValue ) == false) return NULL;
 
-    if(sharedParamContainer->getRetType() > 0)
+    if (PythonCommon::transformRetValToPyException(
+        wait_for_invokation_end.getSemaphore()->returnValue) == ito::retOk)
     {
-        if(sharedParamContainer->getRetType() == QMetaType::type("ito::PythonQObjectMarshal"))
+        return NULL;
+    }
+
+    if(paramContainer->getRetType() > 0)
+    {
+        if(paramContainer->getRetType() == QMetaType::type("ito::PythonQObjectMarshal"))
         {
-            ito::PythonQObjectMarshal *m = (ito::PythonQObjectMarshal*)sharedParamContainer->args()[0];
+            ito::PythonQObjectMarshal *m = (ito::PythonQObjectMarshal*)paramContainer->args()[0];
 
             PyObject *newArgs = PyTuple_New(4);
             PyTuple_SetItem(newArgs,0, PyLong_FromLong(m->m_objectID));
@@ -638,7 +672,9 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
         }
         else
         {
-            return PythonQtConversion::ConvertQtValueToPythonInternal(sharedParamContainer->getRetType(), sharedParamContainer->args()[0]);
+            return PythonQtConversion::ConvertQtValueToPythonInternal(
+                paramContainer->getRetType(), paramContainer->args()[0]
+            );
         }
     }
 
@@ -2333,14 +2369,22 @@ PyObject* PythonUi::PyUi_repr(PyUi *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiShow_doc,"show([modal=0]) -> shows initialized UI-Dialog \n\
+PyDoc_STRVAR(pyUiShow_doc,"show([modal=0]) -> shows the window or dialog. \n\
 \n\
 Parameters \n\
 ----------- \n\
 modal : {int}, optional \n\
-    * 0: non-modal (default)\n\
+    * 0: non-modal, the opened GUI does not block other windows of itom (default)\n\
     * 1: modal (python waits until dialog is hidden)\n\
     * 2: modal (python returns immediately)\n\
+\n\
+Returns \n\
+---------- \n\
+Usually the value -1 is returned. Only if a dialog is shown with ``modal=1``, \n\
+the exit code of the shown dialog is returned, once this dialog is closed again. \n\
+This code is: 1 if the dialog has been accepted (e.g. by closing it by an OK button \n\
+or 0 if the dialog has been rejected (Cancel button or directly closing the dialog \n\
+via the close icon in its title bar. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -2373,7 +2417,14 @@ PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
     *retCodeIfModal = -1;
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "showDialog", Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)) , Q_ARG(int,modalLevel), Q_ARG(QSharedPointer<int>, retCodeIfModal), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "showDialog", 
+        Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)) , 
+        Q_ARG(int,modalLevel), 
+        Q_ARG(QSharedPointer<int>, retCodeIfModal), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); 
     
     if(modalLevel == 1)
     {
@@ -2408,6 +2459,8 @@ PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiHide_doc, "hide() -> hides initialized user interface \n\
 \n\
+A hidden window or dialog can be shown again via the method :py:meth:`~itom.ui.show`.\n\
+\n\
 See Also \n\
 --------- \n\
 show(modal)");
@@ -2429,7 +2482,12 @@ PyObject* PythonUi::PyUi_hide(PyUi *self)
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "hideDialog", Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(
+        uiOrga, 
+        "hideDialog", 
+        Q_ARG(uint, static_cast<unsigned int>(self->uiHandle)), 
+        Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -2444,7 +2502,7 @@ PyObject* PythonUi::PyUi_hide(PyUi *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiIsVisible_doc,"isVisible() -> returns true if dialog is still visible\n\
+PyDoc_STRVAR(pyUiIsVisible_doc,"isVisible() -> returns True if dialog is still visible\n\
 \n\
 Returns \n\
 ------- \n\
@@ -3642,7 +3700,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     
     PyErr_Clear();
     QVector<ito::ParamBase> paramsMandBase, paramsOptBase;
-    ito::RetVal retVal = 0;
+    ito::RetVal retVal = ito::retOk;
     PyObject *pnameObj = NULL;
     PyObject *params = NULL;
     QString algoWidgetName;
