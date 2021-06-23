@@ -19,11 +19,11 @@
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.1)
- 
+  
 project(itom)
 
 message(STATUS "--------------- PROJECT itom -----------------")
-
+ 
 set(ITOM_3RDPARTYFOLDER CACHE PATH 
     "Path to the AIO 3rdParty Folder, containing cmake/itom_3rdParty.cmake")
 if(ITOM_3RDPARTYFOLDER)
