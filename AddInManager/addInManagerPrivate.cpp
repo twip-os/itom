@@ -1086,16 +1086,13 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
             }
 
             waitCond = new ItomSharedSemaphore();
-
-            // this a (temporary?) workaround for application hanging on closing, using addInManager dll 
-            Qt::ConnectionType conType = (QApplication::instance() != NULL && !(m_pQCoreApp && QApplication::hasPendingEvents())) ? Qt::AutoConnection : Qt::DirectConnection;
-            QMetaObject::invokeMethod(addIn, "close", conType, Q_ARG(ItomSharedSemaphore*, waitCond));
-
+            QMetaObject::invokeMethod(addIn, "close", Q_ARG(ItomSharedSemaphore*, waitCond));
             while (waitCond->wait(m_timeOutInitClose) == false && !timeout)
             {
                 if (addIn->isAlive() == 0)
                 {
-                    retval += ito::RetVal(ito::retError, 0, tr("Timeout while closing plugin").toLatin1().data());
+                    retval += ito::RetVal(
+                        ito::retError, 0, tr("Timeout while closing plugin").toLatin1().data());
                     timeout = true;
                     break;
                 }
@@ -1110,10 +1107,10 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
                 if (aib->getCallInitInNewThread())
                 {
                     ItomSharedSemaphoreLocker moveToThreadLocker(new ItomSharedSemaphore());
-                    // this a (temporary?) workaround for application hanging on closing, using addInManager dll 
-                    Qt::ConnectionType conType = (QApplication::instance() != NULL && !(m_pQCoreApp && QApplication::hasPendingEvents())) ? Qt::AutoConnection : Qt::DirectConnection;
-
-                    if (QMetaObject::invokeMethod(addIn, "moveBackToApplicationThread", conType, Q_ARG(ItomSharedSemaphore*, moveToThreadLocker.getSemaphore())))
+                    if (QMetaObject::invokeMethod(
+                            addIn,
+                            "moveBackToApplicationThread",
+                            Q_ARG(ItomSharedSemaphore*, moveToThreadLocker.getSemaphore())))
                     {
                         if (moveToThreadLocker->wait(m_timeOutInitClose) == false)
                         {
