@@ -944,6 +944,7 @@ template<typename _Tp> const ito::RetVal AddInManagerPrivate::initAddInActuatorO
 
         waitCond = new ItomSharedSemaphore();
         Qt::ConnectionType conType = (QApplication::instance() != NULL) ? Qt::AutoConnection : Qt::DirectConnection;
+
         QMetaObject::invokeMethod(
             (*addIn),
             "init", 
@@ -1086,13 +1087,14 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
             }
 
             waitCond = new ItomSharedSemaphore();
+
             QMetaObject::invokeMethod(addIn, "close", Q_ARG(ItomSharedSemaphore*, waitCond));
+
             while (waitCond->wait(m_timeOutInitClose) == false && !timeout)
             {
                 if (addIn->isAlive() == 0)
                 {
-                    retval += ito::RetVal(
-                        ito::retError, 0, tr("Timeout while closing plugin").toLatin1().data());
+                    retval += ito::RetVal(ito::retError, 0, tr("Timeout while closing plugin").toLatin1().data());
                     timeout = true;
                     break;
                 }
@@ -1107,10 +1109,8 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
                 if (aib->getCallInitInNewThread())
                 {
                     ItomSharedSemaphoreLocker moveToThreadLocker(new ItomSharedSemaphore());
-                    if (QMetaObject::invokeMethod(
-                            addIn,
-                            "moveBackToApplicationThread",
-                            Q_ARG(ItomSharedSemaphore*, moveToThreadLocker.getSemaphore())))
+
+                    if (QMetaObject::invokeMethod(addIn, "moveBackToApplicationThread", Q_ARG(ItomSharedSemaphore*, moveToThreadLocker.getSemaphore())))
                     {
                         if (moveToThreadLocker->wait(m_timeOutInitClose) == false)
                         {
@@ -1302,13 +1302,9 @@ const ito::RetVal AddInManagerPrivate::loadParamVals(ito::AddInBase *plugin)
 
         QSharedPointer<ito::ParamBase> qsParam(new ito::ParamBase(param1));
 
-        //            if (!param1.isNumeric() &&  (param1.getType() != (ito::ParamBase::String)) && (param1.getType() != (ito::ParamBase::String)))
-        //            {
-        //                ret += ito::RetVal(ito::retWarning, 0, "Paramtype not loadable yet");
-        //                continue;
-        //            }
         waitCond = new ItomSharedSemaphore();
         Qt::ConnectionType conType = (QApplication::instance() != NULL) ? Qt::AutoConnection : Qt::DirectConnection;
+
         QMetaObject::invokeMethod(plugin, "setParam", conType, Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore*, waitCond));
         ret += waitCond->returnValue;
         waitCond->wait(m_timeOutGeneral);
