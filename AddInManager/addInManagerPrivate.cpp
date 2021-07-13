@@ -106,7 +106,7 @@ void AddInManagerPrivate::incRefParamPlugins(ito::AddInBase *ai, QVector<ito::Pa
         {
             ito::ParamBase *param = &((*paramsMand)[n]);
                 
-            if (param->getType() == (ParamBase::HWRef & ito::paramTypeMask))
+            if (param->getType() == ParamBase::HWRef)
             {
                 hwRefPtr = param->getVal<void *>();
                 if (hwRefPtr)
@@ -133,7 +133,7 @@ void AddInManagerPrivate::incRefParamPlugins(ito::AddInBase *ai, QVector<ito::Pa
         for (int n = 0; n < paramsOpt->size(); n++)
         {
             ito::ParamBase *param = &((*paramsOpt)[n]);
-            if (param->getType() == (ParamBase::HWRef & ito::paramTypeMask))
+            if (param->getType() == ParamBase::HWRef)
             {
                 hwRefPtr = param->getVal<void *>();
                 if (hwRefPtr)
@@ -501,9 +501,14 @@ RetVal AddInManagerPrivate::loadAddIn(QString &filename)
                 DELETE_AND_SET_NULL(loader);
             }
         }
+        catch (std::logic_error &ex)
+        {
+            const char* what = ex.what();
+            retValue += ito::RetVal(ito::retError, 0, tr("Caught an exception when loading the plugin '%1'\nReason: %2").arg(filename).arg(what).toLatin1().data());
+        }
         catch (...)
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("Caught exception during loading of plugin: %1").arg(filename).toLatin1().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Caught an exception when loading the plugin '%1'").arg(filename).toLatin1().data());
         }
     }
 
@@ -939,6 +944,7 @@ template<typename _Tp> const ito::RetVal AddInManagerPrivate::initAddInActuatorO
 
         waitCond = new ItomSharedSemaphore();
         Qt::ConnectionType conType = (QApplication::instance() != NULL) ? Qt::AutoConnection : Qt::DirectConnection;
+
         QMetaObject::invokeMethod(
             (*addIn),
             "init", 
@@ -1082,9 +1088,7 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
 
             waitCond = new ItomSharedSemaphore();
 
-            // this a (temporary?) workaround for application hanging on closing, using addInManager dll 
-            Qt::ConnectionType conType = (QApplication::instance() != NULL && !(m_pQCoreApp && QApplication::hasPendingEvents())) ? Qt::AutoConnection : Qt::DirectConnection;
-            QMetaObject::invokeMethod(addIn, "close", conType, Q_ARG(ItomSharedSemaphore*, waitCond));
+            QMetaObject::invokeMethod(addIn, "close", Q_ARG(ItomSharedSemaphore*, waitCond));
 
             while (waitCond->wait(m_timeOutInitClose) == false && !timeout)
             {
@@ -1105,10 +1109,8 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
                 if (aib->getCallInitInNewThread())
                 {
                     ItomSharedSemaphoreLocker moveToThreadLocker(new ItomSharedSemaphore());
-                    // this a (temporary?) workaround for application hanging on closing, using addInManager dll 
-                    Qt::ConnectionType conType = (QApplication::instance() != NULL && !(m_pQCoreApp && QApplication::hasPendingEvents())) ? Qt::AutoConnection : Qt::DirectConnection;
 
-                    if (QMetaObject::invokeMethod(addIn, "moveBackToApplicationThread", conType, Q_ARG(ItomSharedSemaphore*, moveToThreadLocker.getSemaphore())))
+                    if (QMetaObject::invokeMethod(addIn, "moveBackToApplicationThread", Q_ARG(ItomSharedSemaphore*, moveToThreadLocker.getSemaphore())))
                     {
                         if (moveToThreadLocker->wait(m_timeOutInitClose) == false)
                         {
@@ -1300,13 +1302,9 @@ const ito::RetVal AddInManagerPrivate::loadParamVals(ito::AddInBase *plugin)
 
         QSharedPointer<ito::ParamBase> qsParam(new ito::ParamBase(param1));
 
-        //            if (!param1.isNumeric() &&  (param1.getType() != (ito::ParamBase::String & ito::paramTypeMask)) && (param1.getType() != (ito::ParamBase::String & ito::paramTypeMask)))
-        //            {
-        //                ret += ito::RetVal(ito::retWarning, 0, "Paramtype not loadable yet");
-        //                continue;
-        //            }
         waitCond = new ItomSharedSemaphore();
         Qt::ConnectionType conType = (QApplication::instance() != NULL) ? Qt::AutoConnection : Qt::DirectConnection;
+
         QMetaObject::invokeMethod(plugin, "setParam", conType, Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore*, waitCond));
         ret += waitCond->returnValue;
         waitCond->wait(m_timeOutGeneral);

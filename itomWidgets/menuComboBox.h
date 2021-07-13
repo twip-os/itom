@@ -35,6 +35,8 @@
 #include <QMenu>
 #include <QMetaType>
 #include <QWidget>
+#include <qvariant.h>
+#include <qlist.h>
 class QComboBox;
 class QToolButton;
 
@@ -63,11 +65,6 @@ class MenuComboBoxPrivate;
 class ITOMWIDGETS_EXPORT MenuComboBox : public QWidget
 {
   Q_OBJECT
-  
-#if QT_VERSION < 0x050500
-  //for >= Qt 5.5.0 see Q_ENUM definition below
-  Q_ENUMS(EditableBehavior)
-#endif
 
   /// This property holds the text shown on the combobox when there is no
   /// selected item.
@@ -99,11 +96,9 @@ public:
     EditableOnPopup
   };
 
-#if QT_VERSION >= 0x050500
   //Q_ENUM exposes a meta object to the enumeration types, such that the key names for the enumeration
   //values are always accessible.
   Q_ENUM(EditableBehavior)
-#endif
 
     /// Superclass typedef
     typedef QWidget Superclass;
@@ -158,6 +153,19 @@ protected:
 public Q_SLOTS:
     void clearActiveAction();
     void setToolButtonStyle(Qt::ToolButtonStyle style);
+
+    /// this slot only returns the argument list for unittest purposes.
+    /* This slot has no further functionality and can be used
+    to test the proper marshalling between Python, C++ and Qt.
+    */
+    QVariantList __unittestVariantList(const QVariantList &list);
+
+    int __unittestInt(int value);
+    qint64 __unittestInt64(qint64 value);
+    quint64 __unittestUInt64(quint64 value);
+    float __unittestFloat(float value);
+    double __unittestDouble(double value);
+    short __unittestShort(short value);
 
 Q_SIGNALS:
     void actionChanged(QAction* action);

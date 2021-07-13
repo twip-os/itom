@@ -48,10 +48,6 @@ class ITOMWIDGETS_EXPORT ParamEditorWidget : public QWidget
 {
     Q_OBJECT
 
-#if QT_VERSION < 0x050500
-    //for >= Qt 5.5.0 see Q_ENUM definition below
-    Q_ENUMS(ResizeMode)
-#endif
 	Q_PROPERTY(QPointer<ito::AddInBase> plugin READ plugin WRITE setPlugin)
     Q_PROPERTY(int indentation READ indentation WRITE setIndentation)
     Q_PROPERTY(bool rootIsDecorated READ rootIsDecorated WRITE setRootIsDecorated)
@@ -93,11 +89,9 @@ public:
         ResizeToContents
     };
 
-#if QT_VERSION >= 0x050500
     //Q_ENUM exposes a meta object to the enumeration types, such that the key names for the enumeration
     //values are always accessible.
     Q_ENUM(ResizeMode)
-#endif
 
     /**
      * \brief Constructor 
@@ -186,6 +180,7 @@ protected:
     ito::RetVal addParamIntArray(const ito::Param &param, QtProperty *groupProperty);
     ito::RetVal addParamCharArray(const ito::Param &param, QtProperty *groupProperty);
     ito::RetVal addParamDoubleArray(const ito::Param &param, QtProperty *groupProperty);
+    ito::RetVal addParamStringList(const ito::Param &param, QtProperty *groupProperty);
 
     ito::RetVal loadPlugin(QPointer<ito::AddInBase> plugin);
 
@@ -205,6 +200,7 @@ private slots:
     void valueChanged(QtProperty* prop, int num, const char* values);
     void valueChanged(QtProperty* prop, int num, const int* values);
     void valueChanged(QtProperty* prop, int num, const double* values);
+    void valueChanged(QtProperty* prop, int num, const ito::ByteArray* values);
     void valueChanged(QtProperty* prop, const QByteArray &value);
     void valueChanged(QtProperty* prop, int min, int max);
     void valueChanged(QtProperty* prop, int left, int top, int width, int height);

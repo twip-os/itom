@@ -19,15 +19,18 @@
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.1)
-
+ 
 set(target_name qitom) 
 project(${target_name})
-
+ 
 message(STATUS "--------------- EXECUTABLE ${target_name} -----------------")
 
 # include commonly used itom CMake macros (internal can only be used within the core projects) 
 include("../cmake/ItomBuildMacros.cmake")
 include("../cmake/ItomBuildMacrosInternal.cmake")
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 itom_init_cmake_policy(3.12)
 itom_init_core_common_vars()
@@ -72,10 +75,17 @@ find_package(PythonLibs 3.0 REQUIRED)
 # can be used from 3.12 onwards
 # find_package(Python 3.0 COMPONENTS Interpreter Development REQUIRED )
 # FIND_PACKAGE (Python3 COMPONENTS Interpreter Development)
+
 find_package(NumPy REQUIRED)
+
+message(STATUS "Detected Python version: ${PYTHONLIBS_VERSION_STRING}")
 message(STATUS "Python include directory: ${PYTHON_INCLUDE_DIR}")
 message(STATUS "Python executable: ${PYTHON_EXECUTABLE}")
 message(STATUS "Numpy include directory: ${NUMPY_INCLUDE_DIRS}")
+
+if (${PYTHONLIBS_VERSION_STRING} VERSION_LESS "3.5.0")
+    message(FATAL_ERROR "The minimum required Python version is 3.5.0")
+endif()
 
 find_package(OpenCV COMPONENTS core REQUIRED)
 if(BUILD_WITH_PCL)
@@ -215,8 +225,8 @@ include_directories(
 link_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
-    ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager
-    
+    ${CMAKE_CURRENT_BINARY_DIR}/../AddInManager   
+    ${CMAKE_CURRENT_BINARY_DIR}/../itomWidgets  
 )
  
 set(qitom_HEADERS_NOMOC
@@ -247,17 +257,17 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/guiHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/sharedPointerHelper.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/helper/sleeper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/helpViewer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/qpropertyHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/outlineItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/timerModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/designerWidgetOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/helpSystem.h
@@ -269,6 +279,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/widgetWrapper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAlgorithms.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDataObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngine.h
@@ -281,7 +292,6 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJediRunner.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNone.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNumeric.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonProgressObserver.h
@@ -293,6 +303,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRgba.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonShape.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonSharedPointerGuard.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonStatePublisher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonStream.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythontParamConversion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUi.h
@@ -321,6 +332,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetailDataObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/itomSpinBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputDialog.h
@@ -331,9 +343,11 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCompletion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCodeFormat.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCalltips.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorDocstringGenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCodeCheckers.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.h
@@ -362,10 +376,13 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/menuOnlyForEnter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/shortcutAction.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/tabSwitcherWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiDialog.h
@@ -383,7 +400,9 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textDecoration.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeCheckerItem.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/pyCodeFormatter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textBlockUserData.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/toolTip.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/foldDetector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/charBasedFoldDetector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/indentFoldDetector.h
@@ -401,8 +420,10 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/symbolMatcherMode.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyCalltips.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyGotoAssignment.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyDocstringGenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/codeCompletion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordclick.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordHoverTooltip.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/checkerBookmarkPanel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/breakpointPanel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/foldingPanel.h
@@ -411,6 +432,14 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/codeEditorStyle.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/utils/utils.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/allocator.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/dbug.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/textdiff/diff.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/hashmap.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/iterator.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/msgno.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/suba.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/textdiff/varray.h
 )
 
 set(qitom_UI
@@ -433,6 +462,7 @@ set(qitom_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetailDataObject.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputDialog.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.ui
@@ -442,9 +472,11 @@ set(qitom_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCompletion.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCodeFormat.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCalltips.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorDocstringGenerator.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCodeCheckers.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.ui
@@ -484,10 +516,11 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/bookmarkModel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/outlineItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/timerModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/designerWidgetOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/helpSystem.cpp
@@ -499,6 +532,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/widgetWrapper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAlgorithms.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonCommon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDataObject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngine.cpp
@@ -507,7 +541,6 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItom.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonJediRunner.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNumeric.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonProgressObserver.cpp
@@ -519,6 +552,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRgba.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonShape.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonSharedPointerGuard.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonStatePublisher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonStream.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythontParamConversion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUi.cpp
@@ -546,17 +580,19 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetailDataObject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCompletion.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCodeFormat.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCalltips.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGotoAssignment.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorDocstringGenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCodeCheckers.cpp
@@ -585,10 +621,12 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorPrinter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/shortcutAction.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/tabSwitcherWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiDialog.cpp
@@ -601,7 +639,9 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textDecoration.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/codeCheckerItem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/pyCodeFormatter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/textBlockUserData.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/toolTip.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/foldDetector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/charBasedFoldDetector.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/foldDetector/indentFoldDetector.cpp
@@ -616,11 +656,13 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/indenter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/occurrences.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyAutoIndent.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyDocstringGenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/symbolMatcherMode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyCalltips.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyGotoAssignment.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/codeCompletion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordclick.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/wordHoverTooltip.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/checkerBookmarkPanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/breakpointPanel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/panels/foldingPanel.cpp
@@ -629,6 +671,13 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/syntaxHighlighterBase.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/syntaxHighlighter/codeEditorStyle.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/utils/utils.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/allocator.c
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/dbug.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/textdiff/diff.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/hashmap.c
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/msgno.c
+    #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/suba.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/textdiff/varray.cpp
 )
 
 if(MSVC)
@@ -651,7 +700,9 @@ itom_add_source_group(codeEditor/modes)
 itom_add_source_group(codeEditor/panels)
 itom_add_source_group(codeEditor/syntaxHighlighter)
 itom_add_source_group(codeEditor/utils)
+itom_add_source_group(textdiff)
 #end add filters to visual studio
+
 
 #Find ITOM_VERION version by looking at global.h
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_[A-Z]+[ \t]+0x[0-9A-F]+$")
@@ -827,6 +878,18 @@ endforeach()
 
 # Qt: enable all automoc, autouic and autorcc. Autouic file will be disabled for all files that are processed manually by itom_qt_wrap_ui.
 set_target_properties(${target_name} PROPERTIES AUTOMOC ON AUTORCC ON AUTOUIC ON)
+
+# increase the stack size of the linker to avoid stack overflow errors for recursive calls
+# Since stack size holds for all threads. The python thread itself gets its own.
+# From Qt 5.10 on, it is possible to directly set the stack size of relevant threads,
+# including the worker thread for Jedi calls. Since the stack size of the thread pool
+# for Jedi cannot be changed with Qt < 5.10, the overall stack size is changed then here.
+if(MSVC)
+    if((NOT ${Qt5_FOUND}) OR (Qt5_VERSION VERSION_LESS 5.10.0))
+        # see https://stackoverflow.com/questions/49644273/cmake-change-stack-size
+        set_target_properties(${target_name} PROPERTIES LINK_FLAGS "/STACK:4000000")
+    endif()
+endif()
  
 itom_build_parallel_linux(${target_name})
 
@@ -843,6 +906,26 @@ endif()
 if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/plotLegends")
     message(WARNING "SDK/include/plotLegends exists. This folder will be removed.")
     file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/plotLegends")
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTable.dll")
+    message(WARNING "dataObjectTable.dll exists in designer. This file will be removed.")
+    file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTable.dll")
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTabled.dll")
+    message(WARNING "dataObjectTabled.dll exists in designer. This file will be removed.")
+    file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../designer/dataObjectTabled.dll")
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../designer/dObMetaDataTable.dll")
+    message(WARNING "dObMetaDataTable.dll exists in designer. This file will be removed.")
+    file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../designer/dObMetaDataTable.dll")
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../designer/dObMetaDataTabled.dll")
+    message(WARNING "dObMetaDataTabled.dll exists in designer. This file will be removed.")
+    file(REMOVE_RECURSE "${CMAKE_CURRENT_BINARY_DIR}/../designer/dObMetaDataTabled.dll")
 endif()
 
 # copy some folders and files during generate
@@ -910,6 +993,9 @@ endif()
 if(MSVC)
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../itom.bat.in ${CMAKE_CURRENT_BINARY_DIR}/../itom.bat )
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../itomd.bat.in ${CMAKE_CURRENT_BINARY_DIR}/../itomd.bat )
+    
+    # configuration file for the Google Test Adapter as Visual Studio Extension
+    configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../itom.gta.runsettings.in ${CMAKE_CURRENT_BINARY_DIR}/../itom.gta.runsettings )
 endif()
 
 #Configure a RC file for MS visual studio to add version information in explorer to exe file

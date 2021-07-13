@@ -1,38 +1,26 @@
-'''This example demonstrates how to:
-* Modify the Toolbar
-* Create tools
-* Add tools
-* Remove tools
-Using `matplotlib.backend_managers.ToolManager`
-'''
-
-from __future__ import print_function
-import matplotlib
-matplotlib.rcParams['toolbar'] = 'toolmanager'
 import matplotlib.pyplot as plt
+plt.rcParams['toolbar'] = 'toolmanager'
 from matplotlib.backend_tools import ToolBase, ToolToggleBase
 
 
 class ListTools(ToolBase):
-    '''List all the tools controlled by the `ToolManager`'''
+    """List all the tools controlled by the `ToolManager`."""
     # keyboard shortcut
     default_keymap = 'm'
     description = 'List Tools'
 
     def trigger(self, *args, **kwargs):
         print('_' * 80)
-        print("{0:12} {1:45} {2}".format('Name (id)',
-                                         'Tool description',
-                                         'Keymap'))
+        print("{0:12} {1:45} {2}".format(
+            'Name (id)', 'Tool description', 'Keymap'))
         print('-' * 80)
         tools = self.toolmanager.tools
-        for name in sorted(tools.keys()):
+        for name in sorted(tools):
             if not tools[name].description:
                 continue
             keys = ', '.join(sorted(self.toolmanager.get_tool_keymap(name)))
-            print("{0:12} {1:45} {2}".format(name,
-                                             tools[name].description,
-                                             keys))
+            print("{0:12} {1:45} {2}".format(
+                name, tools[name].description, keys))
         print('_' * 80)
         print("Active Toggle tools")
         print("{0:12} {1:45}".format("Group", "Active"))
@@ -42,22 +30,22 @@ class ListTools(ToolBase):
 
 
 class GroupHideTool(ToolToggleBase):
-    '''Hide lines with a given gid'''
-    default_keymap = 'G'
-    description = 'Hide by gid'
+    """Show lines with a given gid."""
+    default_keymap = 'S'
+    description = 'Show by gid'
+    default_toggled = True
 
-    def __init__(self, *args, **kwargs):
-        self.gid = kwargs.pop('gid')
-        ToolToggleBase.__init__(self, *args, **kwargs)
+    def __init__(self, *args, gid, **kwargs):
+        self.gid = gid
+        super().__init__(*args, **kwargs)
 
     def enable(self, *args):
-        self.set_lines_visibility(False)
-
-    def disable(self, *args):
         self.set_lines_visibility(True)
 
+    def disable(self, *args):
+        self.set_lines_visibility(False)
+
     def set_lines_visibility(self, state):
-        gr_lines = []
         for ax in self.figure.get_axes():
             for line in ax.get_lines():
                 if line.get_gid() == self.gid:
@@ -72,7 +60,7 @@ plt.plot([3, 2, 1], gid='mygroup')
 
 # Add the custom tools that we created
 fig.canvas.manager.toolmanager.add_tool('List', ListTools)
-fig.canvas.manager.toolmanager.add_tool('Hide', GroupHideTool, gid='mygroup')
+fig.canvas.manager.toolmanager.add_tool('Show', GroupHideTool, gid='mygroup')
 
 
 # Add an existing tool to new group `foo`.
@@ -84,6 +72,6 @@ fig.canvas.manager.toolmanager.remove_tool('forward')
 
 # To add a custom tool to the toolbar at specific location inside
 # the navigation group
-fig.canvas.manager.toolbar.add_tool('Hide', 'navigation', 1)
+fig.canvas.manager.toolbar.add_tool('Show', 'navigation', 1)
 
 plt.show()

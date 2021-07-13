@@ -1010,13 +1010,13 @@ end:
     {
         switch(value->getType())
         {
-        case ito::ParamBase::DObjPtr & ito::paramTypeMask:
+        case ito::ParamBase::DObjPtr:
             filters = AIM->getFilterByInterface(ito::AddInAlgo::iWriteDataObject, suffix);
             break;
-        case ito::ParamBase::PointCloudPtr & ito::paramTypeMask:
+        case ito::ParamBase::PointCloudPtr:
             filters = AIM->getFilterByInterface(ito::AddInAlgo::iWritePointCloud, suffix);
             break;
-        case ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask:
+        case ito::ParamBase::PolygonMeshPtr:
             filters = AIM->getFilterByInterface(ito::AddInAlgo::iWritePolygonMesh, suffix);
             break;
         default:
@@ -1179,7 +1179,7 @@ end:
             {
                 if (IOfilters.testFlag(ito::IOHelper::IOMimeDataObject))
                 {
-                    filterPlugins = AIM->getFilterByInterface(ito::AddInAlgo::iReadDataObject, QString::Null());
+                    filterPlugins = AIM->getFilterByInterface(ito::AddInAlgo::iReadDataObject, QString());
                     foreach(const ito::AddInAlgo::FilterDef *d, filterPlugins)
                     {
                         filter << d->m_interfaceMeta.split(";;"); //in case of iReadDataObject-interface, m_interfaceMeta contains the file-filter
@@ -1187,7 +1187,7 @@ end:
                 }
                 if (IOfilters.testFlag(ito::IOHelper::IOMimePointCloud))
                 {
-                    filterPlugins = AIM->getFilterByInterface(ito::AddInAlgo::iReadPointCloud, QString::Null());
+                    filterPlugins = AIM->getFilterByInterface(ito::AddInAlgo::iReadPointCloud, QString());
                     foreach(const ito::AddInAlgo::FilterDef *d, filterPlugins)
                     {
                         filter << d->m_interfaceMeta.split(";;"); //in case of iReadDataObject-interface, m_interfaceMeta contains the file-filter
@@ -1195,7 +1195,7 @@ end:
                 }
                 if (IOfilters.testFlag(ito::IOHelper::IOMimePolygonMesh))
                 {
-                    filterPlugins = AIM->getFilterByInterface(ito::AddInAlgo::iReadPolygonMesh, QString::Null());
+                    filterPlugins = AIM->getFilterByInterface(ito::AddInAlgo::iReadPolygonMesh, QString());
                     foreach(const ito::AddInAlgo::FilterDef *d, filterPlugins)
                     {
                         filter << d->m_interfaceMeta.split(";;"); //in case of iReadDataObject-interface, m_interfaceMeta contains the file-filter
@@ -1207,7 +1207,7 @@ end:
             {
                 if (IOfilters.testFlag(ito::IOHelper::IOMimeDataObject))
                 {
-                    filterPlugins = AIM->getFilterByInterface(ito::AddInAlgo::iWriteDataObject, QString::Null());
+                    filterPlugins = AIM->getFilterByInterface(ito::AddInAlgo::iWriteDataObject, QString());
                     foreach(const ito::AddInAlgo::FilterDef *d, filterPlugins)
                     {
                         filter << d->m_interfaceMeta.split(";;"); //in case of iWriteDataObject-interface, m_interfaceMeta contains the file-filter
@@ -1215,7 +1215,7 @@ end:
                 }
                 if (IOfilters.testFlag(ito::IOHelper::IOMimePointCloud))
                 {
-                    filterPlugins = AIM->getFilterByInterface(ito::AddInAlgo::iWritePointCloud, QString::Null());
+                    filterPlugins = AIM->getFilterByInterface(ito::AddInAlgo::iWritePointCloud, QString());
                     foreach(const ito::AddInAlgo::FilterDef *d, filterPlugins)
                     {
                         filter << d->m_interfaceMeta.split(";;"); //in case of iReadDataObject-interface, m_interfaceMeta contains the file-filter
@@ -1223,7 +1223,7 @@ end:
                 }
                 if (IOfilters.testFlag(ito::IOHelper::IOMimePolygonMesh))
                 {
-                    filterPlugins = AIM->getFilterByInterface(ito::AddInAlgo::iWritePolygonMesh, QString::Null());
+                    filterPlugins = AIM->getFilterByInterface(ito::AddInAlgo::iWritePolygonMesh, QString());
                     foreach(const ito::AddInAlgo::FilterDef *d, filterPlugins)
                     {
                         filter << d->m_interfaceMeta.split(";;"); //in case of iReadDataObject-interface, m_interfaceMeta contains the file-filter
