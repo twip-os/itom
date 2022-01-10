@@ -527,8 +527,6 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
         return NULL;
     }
 
-    QSharedPointer<FctCallParamContainer> paramContainer;
-
 
     /*
     Make sure paramContainer is declared above possibleMethods.

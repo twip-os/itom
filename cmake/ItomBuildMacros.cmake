@@ -257,7 +257,7 @@ endmacro()
 # itom_init_cmake_policy()
 # itom_init_plugin_library(${target_name})
 # .
-macro(itom_init_plugin_library target version)
+macro(itom_init_plugin_library target)
     set(options SKIP_GIT_VERSION)
     set(oneValueArgs)
     set(multiValueArgs )
