@@ -6,11 +6,12 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/clang",
+            "compilerPath": "/usr/bin/g++-8",
             "cStandard": "c11",
             "cppStandard": "c++14",
-            "intelliSenseMode": "linux-clang-arm",
-            "compileCommands": "/home/pi/itom/build/itom/compile_commands.json"
+            "intelliSenseMode": "linux-gcc-arm",
+            "compileCommands": "${workspaceFolder}/../../build/itom/build.ninja",
+            "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
     "version": 4

@@ -1,0 +1,21 @@
+{
+    "version": 2,
+    "configurePresets": [
+        {
+            "name": "Transporto",
+            "displayName": "Transporto",
+            "description": "Sets Ninja generator and disables debug postfix.",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/../../build/itom",
+            "cacheVariables": {
+                "CMAKE_DEBUG_POSTFIX": {
+                    "type": "STRING",
+                    "value": ""
+                },
+                "BUILD_TARGET64": "OFF",
+                "BUILD_WITH_PCL": "OFF",
+                "BUILD_WITH_HELPVIEWER": "OFF"
+            }
+        }
+    ]
+}
