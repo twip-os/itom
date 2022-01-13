@@ -2,6 +2,17 @@
     "version": 2,
     "configurePresets": [
         {
+            "name": "DevelopW",
+            "displayName": "Develop Windows",
+            "description": "Sets Visual Studio generator.",
+            "generator": "Visual Studio 16 2019",
+            "binaryDir": "${sourceDir}/../../build/itom",
+            "cacheVariables": {
+                "BUILD_TARGET64": "ON",
+                "BUILD_WITH_PCL": "ON",
+                "ITOM_3RDPARTYFOLDER": "${sourceDir}/../../3rdParty",
+                "ITOM_3RDPARTYPCLFOLDER": "${sourceDir}/../../3rdPartyPCL"
+            },
             "name": "Transporto",
             "displayName": "Transporto",
             "description": "Sets Ninja generator and disables debug postfix.",
