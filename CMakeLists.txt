@@ -17,16 +17,13 @@
 #
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
-
-cmake_minimum_required(VERSION 3.1)
   
-project(itom)
+cmake_minimum_required(VERSION 3.1)
  
+project(itom)
+  
 message(STATUS "--------------- PROJECT itom -----------------")
  
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 set(ITOM_3RDPARTYFOLDER CACHE PATH 
     "Path to the AIO 3rdParty Folder, containing cmake/itom_3rdParty.cmake")
 if(ITOM_3RDPARTYFOLDER)
