@@ -10,7 +10,7 @@
             "cStandard": "c11",
             "cppStandard": "c++14",
             "intelliSenseMode": "linux-gcc-arm",
-            "compileCommands": "${workspaceFolder}/../../build/itom/build.ninja",
+            "compileCommands": "${workspaceFolder}/../../build/itom/compile_commands.json",
             "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
