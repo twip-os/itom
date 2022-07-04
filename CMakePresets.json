@@ -15,8 +15,8 @@
             }
         },
         {
-            "name": "Transporto",
-            "displayName": "Transporto",
+            "name": "transporto_release",
+            "displayName": "Transporto Release",
             "description": "Sets Ninja generator and disables debug postfix.",
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/../../build/itom",
@@ -29,7 +29,16 @@
                 "BUILD_WITH_PCL": "OFF",
                 "BUILD_WITH_HELPVIEWER": "OFF",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": true,
-                "CMAKE_CXX_FLAGS": "-Wno-psabi"
+                "CMAKE_CXX_FLAGS": "-Wno-psabi",
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "transporto_debug",
+            "displayName": "Transporto Debug",
+            "inherits": "transporto_release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
             }
         }
     ]

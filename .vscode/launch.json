@@ -32,7 +32,8 @@
             "cwd": "${fileDirname}",
             "environment": [
                 {
-                    "name": "DISPLAY", "value": "${env:DISPLAY}"
+                    "name": "DISPLAY",
+                    "value": "${env:DISPLAY}"
                 }
             ],
             "externalConsole": false,
