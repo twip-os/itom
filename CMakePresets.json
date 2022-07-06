@@ -25,7 +25,7 @@
                     "type": "STRING",
                     "value": ""
                 },
-                "BUILD_TARGET64": "OFF",
+                "BUILD_TARGET64": "ON",
                 "BUILD_WITH_PCL": "OFF",
                 "BUILD_WITH_HELPVIEWER": "OFF",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": true,
