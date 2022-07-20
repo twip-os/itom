@@ -38,6 +38,7 @@ endif()
 include(cmake/ItomBuildMacros.cmake)
 include(cmake/ItomBuildMacrosInternal.cmake)
 
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT qitom)
 
 
 itom_init_cmake_policy(3.15)

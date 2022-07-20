@@ -1022,3 +1022,22 @@ if(APPLE)
 endif(APPLE)
 
 
+# set the debugger environment for visual studio (semicolons will be added
+# because this is written as a list)
+set(DEBUG_PATH  "PATH=${QT_BINARY_DIR}"
+                "${OpenCV_BIN_DIR}"
+                "${OpenCV_DIR}/bin"
+                "${PCL_DIR}/../bin"
+                "${PYTHON_INCLUDE_DIR}/.."
+                "${Boost_LIBRARY_DIR_DEBUG}"
+                "${VTK_DIR}/../../../bin"
+                "%PATH%")
+
+set(PYTHONPATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../pythonPackages")
+get_filename_component(PYTHONPATH_ABS ${PYTHONPATH} ABSOLUTE)
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+    VS_DEBUGGER_COMMAND           "$<TARGET_FILE:${PROJECT_NAME}>"
+    VS_DEBUGGER_ENVIRONMENT       "${DEBUG_PATH}\nPYTHONPATH=${PYTHONPATH_ABS}"
+    # this does only work when build/itom/Qitom/qitom.vcxproj.user does not exist
+)
