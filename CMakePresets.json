@@ -2,16 +2,51 @@
     "version": 2,
     "configurePresets": [
         {
-            "name": "develop_windows",
-            "displayName": "Develop Windows",
-            "description": "Sets Visual Studio generator.",
-            "generator": "Visual Studio 16 2019",
+            "name": "twip_common",
+            "hidden": true,
             "binaryDir": "${sourceDir}/../../build/itom",
             "cacheVariables": {
                 "BUILD_TARGET64": "ON",
+                "Boost_NO_WARN_NEW_VERSIONS": "ON"
+            }
+        },
+        {
+            "name": "develop_windows",
+            "displayName": "Develop Windows",
+            "inherits": "twip_common",
+            "description": "Sets Visual Studio generator.",
+            "generator": "Visual Studio 16 2019",
+            "cacheVariables": {
                 "BUILD_WITH_PCL": "ON",
                 "ITOM_3RDPARTYFOLDER": "${sourceDir}/../../3rdParty",
                 "ITOM_3RDPARTYPCLFOLDER": "${sourceDir}/../../3rdPartyPCL"
+            }
+        },
+        {
+            "name": "transporto_release",
+            "displayName": "Transporto Release",
+            "inherits": "twip_common",
+            "description": "Sets Ninja generator and disables debug postfix.",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_DEBUG_POSTFIX": {
+                    "type": "STRING",
+                    "value": ""
+                },
+                "BUILD_WITH_PCL": "ON",
+                "BUILD_WITH_HELPVIEWER": "OFF",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+                "CMAKE_CXX_FLAGS": "-Wno-psabi",
+                "CMAKE_BUILD_TYPE": "Release",
+                "BOOST_INCLUDEDIR": "/usr/include/boost"
+            }
+        },
+        {
+            "name": "transporto_debug",
+            "displayName": "Transporto Debug",
+            "inherits": "transporto_release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
             }
         }
     ]
