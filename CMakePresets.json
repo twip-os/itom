@@ -2,7 +2,7 @@
     "version": 2,
     "configurePresets": [
         {
-            "name": "DevelopW",
+            "name": "develop_windows",
             "displayName": "Develop Windows",
             "description": "Sets Visual Studio generator.",
             "generator": "Visual Studio 16 2019",
