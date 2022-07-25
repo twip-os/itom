@@ -37,7 +37,8 @@
                 "BUILD_WITH_HELPVIEWER": "OFF",
                 "CMAKE_EXPORT_COMPILE_COMMANDS": true,
                 "CMAKE_CXX_FLAGS": "-Wno-psabi",
-                "CMAKE_BUILD_TYPE": "Release"
+                "CMAKE_BUILD_TYPE": "Release",
+                "BOOST_INCLUDEDIR": "/usr/include/boost"
             }
         },
         {
