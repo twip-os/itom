@@ -1,4 +1,5 @@
 @echo off
 PATH=@QT_BINARY_DIR@;@OpenCV_BIN_DIR@;@OpenCV_DIR@/bin;@PCL_DIR@/../bin;@PYTHON_INCLUDE_DIR@/..;@Boost_LIBRARY_DIR_DEBUG@;@VTK_DIR@/../../../bin;%PATH%
+set PYTHONPATH=@PYTHONPATH@
 start qitomd.exe
 exit
