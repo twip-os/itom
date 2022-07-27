@@ -82,7 +82,8 @@ else()
                     x64/Release/lib
                     x64/Debug/lib 
                     x64/Release/dll
-                    x64/Debug/dll)
+                    x64/Debug/dll
+                    build/v142/x64/Release/dll)
             else (BUILD_TARGET64)
                 set( LibUSB_LIBRARY_PATH_SUFFIX 
                     MS32/static 
