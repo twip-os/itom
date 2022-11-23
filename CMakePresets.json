@@ -6,18 +6,30 @@
             "hidden": true,
             "binaryDir": "${sourceDir}/../../build/itom",
             "cacheVariables": {
-                "BUILD_TARGET64": "ON",
-                "Boost_NO_WARN_NEW_VERSIONS": "ON"
+                "BUILD_TARGET64": true,
+                "Boost_NO_WARN_NEW_VERSIONS": true
             }
         },
         {
             "name": "develop_windows",
             "displayName": "Develop Windows",
             "inherits": "twip_common",
-            "description": "Sets Visual Studio generator.",
+            "description": "Sets Visual Studio generator. With PCL.",
             "generator": "Visual Studio 16 2019",
             "cacheVariables": {
-                "BUILD_WITH_PCL": "ON",
+                "BUILD_WITH_PCL": true,
+                "ITOM_3RDPARTYFOLDER": "${sourceDir}/../../3rdParty",
+                "ITOM_3RDPARTYPCLFOLDER": "${sourceDir}/../../3rdPartyPCL"
+            }
+        },
+        {
+            "name": "twip_api",
+            "displayName": "twip API",
+            "inherits": "twip_common",
+            "description": "Sets Visual Studio generator. Without PCL.",
+            "generator": "Visual Studio 16 2019",
+            "cacheVariables": {
+                "BUILD_WITH_PCL": false,
                 "ITOM_3RDPARTYFOLDER": "${sourceDir}/../../3rdParty",
                 "ITOM_3RDPARTYPCLFOLDER": "${sourceDir}/../../3rdPartyPCL"
             }
@@ -33,8 +45,8 @@
                     "type": "STRING",
                     "value": ""
                 },
-                "BUILD_WITH_PCL": "ON",
-                "BUILD_WITH_HELPVIEWER": "OFF",
+                "BUILD_WITH_PCL": true,
+                "BUILD_WITH_HELPVIEWER": false,
                 "CMAKE_EXPORT_COMPILE_COMMANDS": true,
                 "CMAKE_CXX_FLAGS": "-Wno-psabi",
                 "CMAKE_BUILD_TYPE": "Release",
