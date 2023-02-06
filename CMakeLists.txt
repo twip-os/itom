@@ -34,7 +34,6 @@ set(ITOM_3RDPARTYPCLFOLDER CACHE PATH
 if(ITOM_3RDPARTYPCLFOLDER)
     include(${ITOM_3RDPARTYPCLFOLDER}/cmake/itom_3rdPartyPCL.cmake)
 endif()
-endif()
 if(BUILD_QTVERSION STREQUAL "Qt6")
     set(CMAKE_CXX_STANDARD 17)
     set(CXXFLAGS "${CXXFLAGS} /permissive-")
