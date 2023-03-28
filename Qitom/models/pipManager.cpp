@@ -162,120 +162,120 @@ ito::RetVal PipManager::initPythonIfStandalone()
 {
     ito::RetVal retval;
 
-	//keep this method consistent to PythonEngine::pythonSetup
+    //keep this method consistent to PythonEngine::pythonSetup
 
-	QString pythonSubDir = QCoreApplication::applicationDirPath() + QString("/python%1").arg(PY_MAJOR_VERSION);
-	QString pythonAllInOneDir = QCoreApplication::applicationDirPath() + QString("/../../3rdParty/Python");
-	qDebug() << "pythonAllInOneDir:" << pythonAllInOneDir;
-	//check if an alternative home directory of Python should be set:
-	QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-	settings.beginGroup("Python");
-	QString pythonHomeFromSettings = settings.value("pyHome", "").toString();
-	int pythonDirState = settings.value("pyDirState", -1).toInt();
-	if (pythonDirState == -1) //not yet decided
-	{
+    QString pythonSubDir = QCoreApplication::applicationDirPath() + QString("/python%1").arg(PY_MAJOR_VERSION);
+    QString pythonAllInOneDir = QCoreApplication::applicationDirPath() + QString("/../../3rdParty/Python");
+    qDebug() << "pythonAllInOneDir:" << pythonAllInOneDir;
+    //check if an alternative home directory of Python should be set:
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("Python");
+    QString pythonHomeFromSettings = settings.value("pyHome", "").toString();
+    int pythonDirState = settings.value("pyDirState", -1).toInt();
+    if (pythonDirState == -1) //not yet decided
+    {
 #ifdef WIN32
-		if (QDir(pythonSubDir).exists() && \
-			QFileInfo(pythonSubDir + QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION)).exists())
-		{
-			pythonDirState = 0; //use pythonXX subdirectory of itom as python home path
-	}
-		else if (QDir(pythonAllInOneDir).exists() && \
-			QFileInfo(pythonAllInOneDir + QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION)).exists())
-		{
-			pythonDirState = 2;
-			pythonHomeFromSettings = pythonAllInOneDir;
-			settings.setValue("pyHome", pythonHomeFromSettings);
-		}
-		else
-		{
-			pythonDirState = 1; //use python default search mechanism for home path (e.g. registry...)
-		}
+        if (QDir(pythonSubDir).exists() && \
+            QFileInfo(pythonSubDir + QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION)).exists())
+        {
+            pythonDirState = 0; //use pythonXX subdirectory of itom as python home path
+    }
+        else if (QDir(pythonAllInOneDir).exists() && \
+            QFileInfo(pythonAllInOneDir + QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION)).exists())
+        {
+            pythonDirState = 2;
+            pythonHomeFromSettings = pythonAllInOneDir;
+            settings.setValue("pyHome", pythonHomeFromSettings);
+        }
+        else
+        {
+            pythonDirState = 1; //use python default search mechanism for home path (e.g. registry...)
+        }
 #else
-		pythonDirState = 1;
+        pythonDirState = 1;
 #endif
-		qDebug() << "pythonDirState:" << pythonDirState;
-		qDebug() << "pythonHomeFromSettings:" << pythonHomeFromSettings;
-		settings.setValue("pyDirState", pythonDirState);
+        qDebug() << "pythonDirState:" << pythonDirState;
+        qDebug() << "pythonHomeFromSettings:" << pythonHomeFromSettings;
+        settings.setValue("pyDirState", pythonDirState);
 }
 
-	settings.endGroup();
+    settings.endGroup();
 
-	QString pythonDir = "";
-	if (pythonDirState == 0) //use pythonXX subdirectory of itom as python home path
-	{
-		if (QDir(pythonSubDir).exists())
-		{
-			pythonDir = pythonSubDir;
-		}
-		else
-		{
-			retval += RetVal::format(retError, 0, tr("The itom subdirectory of Python '%s' is not existing.\nPlease change setting in the property dialog of itom.").toLatin1().data(),
-				pythonSubDir.toLatin1().data());
-			return retval;
-		}
-	}
-	else if (pythonDirState == 2) //user-defined value
-	{
+    QString pythonDir = "";
+    if (pythonDirState == 0) //use pythonXX subdirectory of itom as python home path
+    {
+        if (QDir(pythonSubDir).exists())
+        {
+            pythonDir = pythonSubDir;
+        }
+        else
+        {
+            retval += RetVal::format(retError, 0, tr("The itom subdirectory of Python '%s' is not existing.\nPlease change setting in the property dialog of itom.").toLatin1().data(),
+                pythonSubDir.toLatin1().data());
+            return retval;
+        }
+    }
+    else if (pythonDirState == 2) //user-defined value
+    {
 
-		if (QDir(pythonHomeFromSettings).exists())
-		{
-			pythonDir = pythonHomeFromSettings;
-		}
-		else
-		{
-			retval += RetVal::format(retError, 0, tr("Settings value Python::pyHome has not been set as Python Home directory since it does not exist:  %s").toLatin1().data(),
-				pythonHomeFromSettings.toLatin1().data());
-			return retval;
-		}
-	}
+        if (QDir(pythonHomeFromSettings).exists())
+        {
+            pythonDir = pythonHomeFromSettings;
+        }
+        else
+        {
+            retval += RetVal::format(retError, 0, tr("Settings value Python::pyHome has not been set as Python Home directory since it does not exist:  %s").toLatin1().data(),
+                pythonHomeFromSettings.toLatin1().data());
+            return retval;
+        }
+    }
 
-	if (pythonDir != "")
-	{
-		//the python home path given to Py_SetPythonHome must be persistent for the whole Python session
+    if (pythonDir != "")
+    {
+        //the python home path given to Py_SetPythonHome must be persistent for the whole Python session
         m_pUserDefinedPythonHome = Py_DecodeLocale(pythonDir.toLatin1().data(), NULL);
-		Py_SetPythonHome(m_pUserDefinedPythonHome);
-	}
+        Py_SetPythonHome(m_pUserDefinedPythonHome);
+    }
 
     Py_Initialize();
 
-	//read directory values from Python
-	qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());
-	qDebug() << "Py_GetPath:" << QString::fromWCharArray(Py_GetPath());
-	qDebug() << "Py_GetProgramName:" << QString::fromWCharArray(Py_GetProgramName());
+    //read directory values from Python
+    qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());
+    qDebug() << "Py_GetPath:" << QString::fromWCharArray(Py_GetPath());
+    qDebug() << "Py_GetProgramName:" << QString::fromWCharArray(Py_GetProgramName());
 
-	//check PythonHome to prevent crash upon initialization of Python:
-	QString pythonHome = QString::fromWCharArray(Py_GetPythonHome());
+    //check PythonHome to prevent crash upon initialization of Python:
+    QString pythonHome = QString::fromWCharArray(Py_GetPythonHome());
 #ifdef WIN32
-	QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(";");
+    QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(";");
 #else
-	QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(":");
+    QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(":");
 #endif
-	QDir pythonHomeDir(pythonHome);
-	bool pythonPathValid = false;
-	if (!pythonHomeDir.exists() && pythonHome != "")
-	{
-		retval += RetVal::format(retError, 0, tr("The home directory of Python is currently set to the non-existing directory '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the property dialog of itom.").toLatin1().data(),
-			pythonHomeDir.absolutePath().toLatin1().data());
-		return retval;
-	}
+    QDir pythonHomeDir(pythonHome);
+    bool pythonPathValid = false;
+    if (!pythonHomeDir.exists() && pythonHome != "")
+    {
+        retval += RetVal::format(retError, 0, tr("The home directory of Python is currently set to the non-existing directory '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the property dialog of itom.").toLatin1().data(),
+            pythonHomeDir.absolutePath().toLatin1().data());
+        return retval;
+    }
 
-	foreach(const QString &path, pythonPath)
-	{
-		QDir pathDir(path);
-		if (pathDir.exists("os.py") || pathDir.exists("os.pyc"))
-		{
-			pythonPathValid = true;
-			break;
-		}
-	}
+    foreach(const QString &path, pythonPath)
+    {
+        QDir pathDir(path);
+        if (pathDir.exists("os.py") || pathDir.exists("os.pyc"))
+        {
+            pythonPathValid = true;
+            break;
+        }
+    }
 
-	if (!pythonPathValid)
-	{
-		retval += RetVal::format(retError, 0, tr("The built-in library path of Python could not be found. The current home directory is '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the preferences dialog of itom.").toLatin1().data(),
-			pythonHomeDir.absolutePath().toLatin1().data());
-		return retval;
-	}
+    if (!pythonPathValid)
+    {
+        retval += RetVal::format(retError, 0, tr("The built-in library path of Python could not be found. The current home directory is '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the preferences dialog of itom.").toLatin1().data(),
+            pythonHomeDir.absolutePath().toLatin1().data());
+        return retval;
+    }
 
     return retval;
 }
@@ -547,10 +547,10 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
         {
             arguments << "--format=columns";
         }
-		else if (m_pipVersion >= 0x090000)
-		{
-			arguments << "--format=legacy";
-		}
+        else if (m_pipVersion >= 0x090000)
+        {
+            arguments << "--format=legacy";
+        }
         arguments << parseGeneralOptions(options, false, true);
         startProcess(arguments);
     }
@@ -728,6 +728,11 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
         {
             arguments << "-r";
         }
+        else if (installSettings.type == PipInstall::typePackageSource) // pip development mode of python packages
+        {
+            arguments << "-e";
+        }
+        
         
         // if typeSearchIndex, multiple packages can be installed. They
         // are separated by spaces
@@ -892,22 +897,27 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
         {
             if (exitCode == 0)
             {
-                QRegExp reg("pip ((\\d+)\\.(\\d+)\\.(\\d+)) from(.*)");
-                if (reg.indexIn(output) != -1)
+                QRegularExpression reg("pip ((\\d+)\\.(\\d+)\\.(\\d+)) from(.*)");
+                QRegularExpressionMatch match = reg.match(output);
+                if (match.hasMatch())
                 {
-                    m_pipVersion = CREATEVERSION(reg.cap(2).toInt(), reg.cap(3).toInt(), reg.cap(4).toInt());
-                    QString version = reg.cap(1);
+                    m_pipVersion = CREATEVERSION(
+                        match.captured(2).toInt(),
+                        match.captured(3).toInt(),
+                        match.captured(4).toInt());
+                    QString version = match.captured(1);
                     emit pipVersion(version);
                     m_pipAvailable = true;
                     emit pipRequestFinished(temp, "", true);
                 }
                 else
                 {
-                    QRegExp reg("pip ((\\d+)\\.(\\d+)) from(.*)");
-                    if (reg.indexIn(output) != -1)
+                    QRegularExpression reg("pip ((\\d+)\\.(\\d+)) from(.*)");
+                    QRegularExpressionMatch match = reg.match(output);
+                    if (match.hasMatch())
                     {
-                        m_pipVersion = CREATEVERSION(reg.cap(2).toInt(), reg.cap(3).toInt(), 0);
-                        QString version = reg.cap(1);
+                        m_pipVersion = CREATEVERSION(match.captured(2).toInt(), match.captured(3).toInt(), 0);
+                        QString version = match.captured(1);
                         emit pipVersion(version);
                         m_pipAvailable = true;
                         emit pipRequestFinished(temp, "", true);
@@ -1006,54 +1016,54 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
                     lines = output.split("\n");
                 }
 
-				//The "python.exe - m pip show numpy pip setuptools" request returns a stream in the following way:
-				/*
-				---
-				Name: numpy
-				Version: 1.11.0
-				Summary: NumPy: array processing for numbers, strings, records, and objects.
-				Home-page: http://www.numpy.org
-				Author: NumPy Developers
-				Author-email: numpy-discussion@scipy.org
-				License: BSD
-				Location: c:\program files\python35\lib\site-packages
-				Requires:
-				---
-				Name: pip
-				Version: 9.0.1
-				Summary: The PyPA recommended tool for installing Python packages.
-				Home-page: https://pip.pypa.io/
-				Author: The pip developers
-				Author-email: python-virtualenv@groups.google.com
-				License: MIT
-				Location: c:\program files\python35\lib\site-packages
-				Requires:
-				---
-				Name: setuptools
-				Version: 18.2
-				Summary: Easily download, build, install, upgrade, and uninstall Python packages
+                //The "python.exe - m pip show numpy pip setuptools" request returns a stream in the following way:
+                /*
+                ---
+                Name: numpy
+                Version: 1.11.0
+                Summary: NumPy: array processing for numbers, strings, records, and objects.
+                Home-page: http://www.numpy.org
+                Author: NumPy Developers
+                Author-email: numpy-discussion@scipy.org
+                License: BSD
+                Location: c:\program files\python35\lib\site-packages
+                Requires:
+                ---
+                Name: pip
+                Version: 9.0.1
+                Summary: The PyPA recommended tool for installing Python packages.
+                Home-page: https://pip.pypa.io/
+                Author: The pip developers
+                Author-email: python-virtualenv@groups.google.com
+                License: MIT
+                Location: c:\program files\python35\lib\site-packages
+                Requires:
+                ---
+                Name: setuptools
+                Version: 18.2
+                Summary: Easily download, build, install, upgrade, and uninstall Python packages
 
-				Home-page: https://bitbucket.org/pypa/setuptools
-				Author: Python Packaging Authority
-				Author-email: distutils-sig@python.org
-				License: PSF or ZPL
-				Location: c:\program files\python35\lib\site-packages
-				Requires:
-				*/
+                Home-page: https://bitbucket.org/pypa/setuptools
+                Author: Python Packaging Authority
+                Author-email: distutils-sig@python.org
+                License: PSF or ZPL
+                Location: c:\program files\python35\lib\site-packages
+                Requires:
+                */
 
-				//The following code puts every package into the PythonPackage struct.
-				//Once the next ---line is found, the previous package struct is appended to m_pythonPackages
-				//and a new package struct is created.
+                //The following code puts every package into the PythonPackage struct.
+                //Once the next ---line is found, the previous package struct is appended to m_pythonPackages
+                //and a new package struct is created.
 
-				//Starting from pip 9.0.0, the response does not start with a --- line, therefore
-				// package_started has to be set to true in this case, while it was false for pip < 9.0.0
+                //Starting from pip 9.0.0, the response does not start with a --- line, therefore
+                // package_started has to be set to true in this case, while it was false for pip < 9.0.0
 
                 PythonPackage package;
                 bool package_started = false;
-				if (m_pipVersion >= 0x090000)
-				{
-					package_started = true;
-				}
+                if (m_pipVersion >= 0x090000)
+                {
+                    package_started = true;
+                }
                 int pos;
                 QString key, value;
                 QStringList keys;
@@ -1148,32 +1158,34 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
                 }
                 else
                 {
-                    QRegExp rx("(\\S+) \\(Current: (\\S+) Latest: (\\S+)( \\[\\S+\\])?\\)"); //the style is "scipy (Current: 0.16.1 Latest: 0.17.0 [sdist])"
-                    int pos = 0;
-                    
-                    while ((pos = rx.indexIn(output, pos)) != -1)
+                    QRegularExpression rx("(\\S+) \\(Current: (\\S+) Latest: (\\S+)( \\[\\S+\\])?\\)"); //the style is "scipy (Current: 0.16.1 Latest: 0.17.0 [sdist])"
+                    QRegularExpressionMatchIterator matchIterator = rx.globalMatch(output);
+
+                    while (matchIterator.hasNext())
                     {
-                        outdated[rx.cap(1)] = rx.cap(3);
-                        pos += rx.matchedLength();
+                        QRegularExpressionMatch match = matchIterator.next();
+                        outdated[match.captured(1)] = match.captured(3);
                     }
 
                     //check for style of pip >= 8.0.0
-                    pos = 0;
                     rx.setPattern("(\\S+) \\((\\S+)(, \\S+)?\\) - Latest: (\\S+)( \\[\\S+\\])?"); //the style is "scipy (0.16.1) - Latest: 0.17.0 [sdist]" or "scipy (0.16.1, path-to-location) - Latest: 0.17.0 [sdist]"
-                    while ((pos = rx.indexIn(output, pos)) != -1)
+                    matchIterator = rx.globalMatch(output);
+                    
+                    while (matchIterator.hasNext())
                     {
-                        outdated[rx.cap(1)] = rx.cap(4);
-                        pos += rx.matchedLength();
+                        QRegularExpressionMatch match = matchIterator.next();
+                        outdated[match.captured(1)] = match.captured(4);
                     }
 
                     //check for unknown (that could not been fetched)
-                    pos = 0;
-                    rx.setPattern("Could not find any downloads that satisfy the requirement (\\S+)");
 
-                    while ((pos = rx.indexIn(output, pos)) != -1)
+                    rx.setPattern("Could not find any downloads that satisfy the requirement (\\S+)");
+                    matchIterator = rx.globalMatch(output);
+
+                    while (matchIterator.hasNext())
                     {
-                        unknown[rx.cap(1)] = "unknown";
-                        pos += rx.matchedLength();
+                        QRegularExpressionMatch match = matchIterator.next();
+                        unknown[match.captured(1)] = "unknown";
                     }
                 }
 

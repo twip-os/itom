@@ -28,7 +28,8 @@
 
 #include "qVector2DProperty.h"
 
-#include <qregexp.h>
+#include <qregularexpression.h>
+#include <qregularexpression.h>
 #include <qvector2d.h>
 
 namespace ito {
@@ -67,28 +68,40 @@ void QVector2DProperty::setValue(const QVariant& value)
     if (value.type() == QVariant::String)
     {
         QString v = value.toString();
-        QRegExp rx("([+-]?([0-9]*[\\.,])?[0-9]+(e[+-]?[0-9]+)?)");
-        rx.setCaseSensitivity(Qt::CaseInsensitive);
+        QRegularExpression rx("([+-]?([0-9]*[\\.,])?[0-9]+(e[+-]?[0-9]+)?)", QRegularExpression::CaseInsensitiveOption);
+
         int count = 0;
         int pos = 0;
         float x = 0.0f, y = 0.0f;
-        while ((pos = rx.indexIn(v, pos)) != -1)
+        QRegularExpressionMatch match;
+
+        while ((match = rx.match(v, pos)).hasMatch())
         {
             if (count == 0)
-                x = rx.cap(1).toDouble();
+            {
+                x = match.captured(1).toDouble();
+            }
             else if (count == 1)
-                y = rx.cap(1).toDouble();
+            {
+                y = match.captured(1).toDouble();
+            }
             else if (count > 1)
+            {
                 break;
+            }
+
             ++count;
-            pos += rx.matchedLength();
+            pos = match.capturedEnd();
         }
+
         m_x->setProperty("x", x);
         m_y->setProperty("y", y);
         Property::setValue(QVariant::fromValue(QVector2D(x, y)));
     }
     else
+    {
         Property::setValue(value);
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -125,22 +138,30 @@ void QVector2DProperty::setY(float y)
 //-------------------------------------------------------------------------------------
 QString QVector2DProperty::parseHints(const QString& hints, const QChar component)
 {
-    QRegExp rx(QString("(.*)(") + component + QString("{1})(=\\s*)(.*)(;{1})"));
-    rx.setMinimal(true);
-    int pos = 0;
-    QString componentHints;
-    while ((pos = rx.indexIn(hints, pos)) != -1)
+    QStringList hintList = hints.split(";");
+    QString hintTrimmed;
+    QString pattern = QString("^(.*)(%1)(=\\s*)(.*)$").arg(component);
+    QRegularExpression rx(pattern);
+    QRegularExpressionMatch match;
+    QStringList componentHints;
+    QString name, value;
+
+    foreach(const QString &hint, hintList)
     {
-        // cut off additional front settings (TODO create correct RegExp for that)
-        if (rx.cap(1).lastIndexOf(';') != -1)
-            componentHints += QString("%1=%2;")
-                                  .arg(rx.cap(1).remove(0, rx.cap(1).lastIndexOf(';') + 1))
-                                  .arg(rx.cap(4));
-        else
-            componentHints += QString("%1=%2;").arg(rx.cap(1)).arg(rx.cap(4));
-        pos += rx.matchedLength();
+        hintTrimmed = hint.trimmed();
+
+        if (hintTrimmed != "")
+        {
+            if ((match = rx.match(hintTrimmed)).hasMatch())
+            {
+                name = match.captured(1).trimmed();
+                value = match.captured(4).trimmed();
+                componentHints += QString("%1=%2").arg(name).arg(value);
+            }
+        }
     }
-    return componentHints;
+
+    return componentHints.join(";");
 }
 
 } // end namespace ito

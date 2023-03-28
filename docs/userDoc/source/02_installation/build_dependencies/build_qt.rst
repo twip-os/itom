@@ -5,8 +5,12 @@
 
 .. _build_dependencies_qt:
 
-Compile QT
-===========
+
+Install Qt
+==========
+
+Qt 5
+----
 
 Creating prebuild version of Qt:
 For a working |itom| development environment only a prebuild version of Qt is necessary. 
@@ -42,3 +46,8 @@ For a working |itom| development environment only a prebuild version of Qt is ne
     and change the name of these dll-files into **Qt5WebEngineWidgets.dll** and 
     **Qt5WebEngineWidgetsd.dll**. This bug should be solved with QT version 5.6.3 
     (release August 2017).
+
+Qt 6
+----
+
+Copy the subfolders of the doc folder into the folder /X.X.X//msvc2017_64/doc. Change in the preferences of the Assistant the documentation folder. 

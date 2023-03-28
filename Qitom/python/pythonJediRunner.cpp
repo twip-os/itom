@@ -89,6 +89,20 @@ bool PythonJediRunner::tryToLoadJediIfNotYetDone()
     }
     else
     {
+        if (PyGILState_Check() > 0)
+        {
+            // this should usually never happen, however rare cases have been reported
+            // where it was the case. Therefore this small workaround. If the GIL is
+            // not released, Jedi will not be loaded and the check will not be finished, yet.
+            QThread::msleep(100);
+
+            if (PyGILState_Check() > 0)
+            {
+                // still not working
+                return false;
+            }
+        }
+
         PyGILState_STATE gstate = PyGILState_Ensure();
 
         m_pyModJediChecked = true;
@@ -378,10 +392,13 @@ void GoToAssignmentRunnable::run()
                 {
                     if (line >= 0)
                     {
-                        QFileInfo filepath2 = QString(QLatin1String(path2));
+                        QFileInfo filepath2;
+                        filepath2.setFile(QLatin1String(path2));
+
                         if (lineOffset == 1)
                         {
-                            QFileInfo filepath = m_request.m_path;
+                            QFileInfo filepath(m_request.m_path);
+
                             if (filepath != filepath2)
                             {
                                 lineOffset = 0;
