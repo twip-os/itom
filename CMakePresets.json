@@ -50,7 +50,7 @@
                 "CMAKE_EXPORT_COMPILE_COMMANDS": true,
                 "CMAKE_CXX_FLAGS": "-Wno-psabi",
                 "CMAKE_BUILD_TYPE": "Release",
-                "BOOST_INCLUDEDIR": "/usr/include/boost"
+                "Boost_INCLUDE_DIR": "/usr/include"
             }
         },
         {
