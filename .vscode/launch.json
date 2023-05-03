@@ -11,7 +11,7 @@
             "program": "/home/pi/transportoDevelop/build/itom/qitom",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceRoot}",// "${fileDirname}", Don't know anymore what this is needed for
             "externalConsole": false,
             "MIMode": "gdb",
             "setupCommands": [
@@ -29,7 +29,7 @@
             "program": "/home/pi/transportoDevelop/build/itom/qitom",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceRoot}",// "${fileDirname}", Don't know anymore what this is needed for
             "environment": [
                 {
                     "name": "DISPLAY",
