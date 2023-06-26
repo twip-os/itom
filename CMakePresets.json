@@ -19,7 +19,8 @@
             "cacheVariables": {
                 "BUILD_WITH_PCL": true,
                 "ITOM_3RDPARTYFOLDER": "${sourceDir}/../../3rdParty",
-                "ITOM_3RDPARTYPCLFOLDER": "${sourceDir}/../../3rdPartyPCL"
+                "ITOM_3RDPARTYPCLFOLDER": "${sourceDir}/../../3rdPartyPCL",
+                "BUILD_QTVERSION": "Qt5"
             }
         },
         {

@@ -27,8 +27,6 @@ set_property( DIRECTORY PROPERTY VS_STARTUP_PROJECT "qitom" )
 
 message(STATUS "--------------- PROJECT itom -----------------")
 
-include(cmake/Setup_Core_Itom.cmake)
-
 set(ITOM_3RDPARTYFOLDER CACHE PATH 
     "Path to the AIO 3rdParty Folder, containing cmake/itom_3rdParty.cmake")
 if(ITOM_3RDPARTYFOLDER)
@@ -39,6 +37,9 @@ set(ITOM_3RDPARTYPCLFOLDER CACHE PATH
 if(ITOM_3RDPARTYPCLFOLDER)
     include(${ITOM_3RDPARTYPCLFOLDER}/cmake/itom_3rdPartyPCL.cmake)
 endif()
+
+include(cmake/Setup_Core_Itom.cmake)
+
 if(BUILD_QTVERSION STREQUAL "Qt6")
     set(CMAKE_CXX_STANDARD 17)
 elseif(BUILD_QTVERSION STREQUAL "Qt5")
