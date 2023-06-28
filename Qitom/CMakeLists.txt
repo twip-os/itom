@@ -1057,8 +1057,7 @@ endif(APPLE)
 # set the debugger environment for visual studio (semicolons will be added
 # because this is written as a list)
 set(DEBUG_PATH  "PATH=${QT_BINARY_DIR}"
-                "${OpenCV_BIN_DIR}"
-                "${OpenCV_DIR}/bin"
+                "${OpenCV_DIR}/${OpenCV_ARCH}/${OpenCV_RUNTIME}/bin"
                 "${PCL_DIR}/../bin"
                 "${PYTHON_INCLUDE_DIR}/.."
                 "${Boost_LIBRARY_DIR_DEBUG}"
