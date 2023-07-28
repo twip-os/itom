@@ -1059,7 +1059,7 @@ endif(APPLE)
 set(DEBUG_PATH  "PATH=${QT_BINARY_DIR}"
                 "${OpenCV_DIR}/${OpenCV_ARCH}/${OpenCV_RUNTIME}/bin"
                 "${PCL_DIR}/../bin"
-                "${PYTHON_INCLUDE_DIR}/.."
+                "${Python_ROOT_DIR}"
                 "${Boost_LIBRARY_DIR_DEBUG}"
                 "${VTK_DIR}/../../../bin"
                 "%PATH%")
