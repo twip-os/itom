@@ -21,7 +21,9 @@
 *********************************************************************** */
 #include "mainApplication.h"
 #include "main.h"
+#include "AppManagement.h"
 #include "organizer/userOrganizer.h"
+#include "common/itomLog.h"
 
 #define VISUAL_LEAK_DETECTOR 0 //1 if you want to active the Visual Leak Detector (MSVC and Debug only), else type 0, if build with CMake always set it to 0.
 #if defined _DEBUG  && defined(_MSC_VER) && (VISUAL_LEAK_DETECTOR > 0 || defined(VISUAL_LEAK_DETECTOR_CMAKE))
@@ -72,38 +74,6 @@
 
 
 
-QTextStream *messageStream = NULL;
-QMutex msgOutputProtection;
-
-//! Message handler that redirects qDebug, qWarning and qFatal streams to the global messageStream
-//!
-//!  This method is only registered for this redirection, if the global messageStream is related to the file itomlog.txt.
-//!  The redirection is enabled via args passed to the main function.
-void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
-{
-//    myMessageOutput(type, msg.toLatin1().data());
-    msgOutputProtection.lock();
-
-    switch (type)
-    {
-        case QtDebugMsg:
-            (*messageStream) << "[qDebug    " <<  QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << "     (File: " << context.file << " Line: " << context.line << " Function: " << context.function << ")\n";
-            break;
-        case QtWarningMsg:
-            (*messageStream) << "[qWarning  " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << "     (File: " << context.file << " Line: " << context.line << " Function: " << context.function << ")\n";
-            break;
-        case QtCriticalMsg:
-            (*messageStream) << "[qCritical " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << "     (File: " << context.file << " Line: " << context.line << " Function: " << context.function << ")\n";
-            break;
-        case QtFatalMsg:
-            (*messageStream) << "[qFatal    " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << "     (File: " << context.file << " Line: " << context.line << " Function: " << context.function << ")\n";
-            abort();
-    }
-
-    messageStream->flush();
-    msgOutputProtection.unlock();
-}
-
 //! OpenCV error handler
 //!
 //!  In case of a call of cv::error in any OpenCV method or the dataObject,
@@ -141,10 +111,10 @@ DWORDLONG GetWindowsBuildAndServicePackVersion(bool onlyVersion = true)
         osInfo.dwOSVersionInfoSize = sizeof(osInfo);
         RtlGetVersion(&osInfo);
     }
-    
+
     if (onlyVersion)
     {
-        return osInfo.dwMajorVersion | osInfo.dwMinorVersion | 
+        return osInfo.dwMajorVersion | osInfo.dwMinorVersion |
             osInfo.wServicePackMajor | osInfo.wServicePackMinor;
     }
     else
@@ -259,11 +229,6 @@ int main(int argc, char *argv[])
 #endif
     qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "1");  // auto scale by qt
 
-#if linux
-    // https://www.qt.io/blog/2011/06/03/threaded-opengl-in-4-8
-    QCoreApplication::setAttribute(Qt::AA_X11InitThreads);
-    bool mthread = QCoreApplication::testAttribute(Qt::AA_X11InitThreads);
-#endif
     //startBenchmarks();
 
     //parse arguments passed to the executable
@@ -286,25 +251,27 @@ int main(int argc, char *argv[])
 
     //it is possible to redirect all Qt messages sent via qDebug, qWarning... to the logfile itomlog.txt.
     //This option is enabled via the argument log passed to the executable.
-    QFile logfile;
-    if (args.contains("log", Qt::CaseInsensitive))
+    ito::Logger* logger = nullptr;
+    if (!args.contains("nolog", Qt::CaseInsensitive))
     {
-        logfile.setFileName("itomlog.txt");
-        logfile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
-        messageStream = new QTextStream(&logfile);
-
-        //uncomment that line if you want to print all debug-information (qDebug, qWarning...) to file itomlog.txt
-        qInstallMessageHandler(myMessageOutput);
-        //first lines in log file
-        logfile.write("------------------------------------------------------------------------------------------\n");
-        logfile.write(QString(QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") + " Starting itom... \n").toLatin1().constData());
-        logfile.write("------------------------------------------------------------------------------------------\n");
+        QString logFileDir = "";
+        QStringListIterator i(args);
+        while (i.hasNext())
+        {
+            QString arg = i.next();
+            if (arg.startsWith("log="))
+            {
+                logFileDir = arg.mid(4);
+            }
+        }
+        logger = new ito::Logger("itomlog.txt", logFileDir, 5 * 1024 * 1024, 2);
+        ito::AppManagement::setLogger((QObject*)logger);
     }
 
     //in debug mode uncaught exceptions as well as uncaught
     //cv::Exceptions will be parsed and also passed to qWarning and qFatal.
     cv::redirectError(itomCvError);
-   
+
 
     QItomApplication itomApplication(argc, argv);
 
@@ -513,12 +480,8 @@ int main(int argc, char *argv[])
 
     qInstallMessageHandler(0);
 
-    //close possible logfile
-    DELETE_AND_SET_NULL(messageStream);
-    if (logfile.fileName().isEmpty() == false)
-    {
-        logfile.close();
-    }
+    // close possible logger
+    DELETE_AND_SET_NULL(logger);
 
     return ret;
 }

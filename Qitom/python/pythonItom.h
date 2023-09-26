@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -36,7 +36,7 @@
 #include <qhash.h>
 #include <qstring.h>
 
-namespace ito 
+namespace ito
 {
 
 class FuncWeakRef; //forward declaration
@@ -52,6 +52,7 @@ public:
     //!< methods of module itom
     static PyObject* PyOpenEmptyScriptEditor(PyObject *pSelf, PyObject *pArgs);
     static PyObject* PyNewScript(PyObject *pSelf, PyObject *pArgs);
+    static PyObject* PyLog(PyObject* pSelf, PyObject* pArgs);
     static PyObject* PyOpenScript(PyObject *pSelf, PyObject *pArgs);
     static PyObject* PyClearCommandLine(PyObject *pSelf);
     static PyObject* PyShowHelpViewer(PyObject* pSelf, PyObject* pArgs, PyObject* pKwds);

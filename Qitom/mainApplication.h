@@ -5,7 +5,7 @@
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
-  
+
     itom is free software; you can redistribute it and/or modify it
     under the terms of the GNU Library General Public Licence as published by
     the Free Software Foundation; either version 2 of the Licence, or (at
@@ -25,6 +25,7 @@
 
 #include "python/pythonEngineInc.h"
 #include "python/qDebugStream.h"
+#include "python/pythonLogger.h"
 #include "organizer/scriptEditorOrganizer.h"
 #include "organizer/paletteOrganizer.h"
 #include "organizer/uiOrganizer.h"
@@ -95,6 +96,7 @@ class MainApplication : public QObject
 
         QDebugStream *m_pQout;                                /*!< std::cout is redirected to this instance*/
         QDebugStream *m_pQerr;                                /*!< std::cerr is redirected to this instance*/
+        PythonLogger m_pythonLogger;                          /*!< copies std::cerr to log*/
 
         QString getSplashScreenFileName() const;
         QPixmap getSplashScreenPixmap() const;

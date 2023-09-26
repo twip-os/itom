@@ -41,6 +41,7 @@
 #include "../ui/dialogReloadModule.h"
 #include "../ui/dialogTimerManager.h"
 #include "../ui/widgetInfoBox.h"
+#include "scriptDockWidget.h"
 
 #include "../helper/versionHelper.h"
 #include "../helper/guiHelper.h"
@@ -103,9 +104,10 @@ MainWindow::MainWindow() :
     //    m_pythonMessageDock(NULL),
     m_helpDock(NULL), m_globalWorkspaceDock(NULL), m_localWorkspaceDock(NULL),
     m_callStackDock(NULL), m_fileSystemDock(NULL), m_pAIManagerWidget(NULL), m_appFileNew(NULL),
-    m_appFileOpen(NULL), m_aboutQt(NULL), m_aboutQitom(NULL), m_pMenuFigure(NULL),
+    m_appFileOpen(NULL), m_aboutQt(NULL), m_aboutQitom(NULL), m_copyLog(nullptr), m_pMenuFigure(NULL),
     m_pMenuHelp(NULL), m_pMenuFile(NULL), m_pMenuPython(NULL), m_pMenuReloadModule(NULL),
     m_pMenuView(NULL), m_pHelpSystem(NULL), m_pStatusLblCurrentDir(NULL),
+    m_pStatusLblScriptInfo(nullptr),
     m_pStatusLblPythonBusy(NULL), m_pythonBusy(false), m_pythonDebugMode(false),
     m_pythonInWaitingMode(false), m_isFullscreen(false), m_userDefinedActionCounter(0),
     m_plastFilesMenu(NULL)
@@ -733,6 +735,31 @@ void MainWindow::addAbstractDock(
             }
         }
 
+        ScriptDockWidget* sdw = qobject_cast<ScriptDockWidget*>(dockWidget);
+
+        if (sdw)
+        {
+            connect(sdw, &ScriptDockWidget::dockStateChanged, [=](bool docked)
+                {
+                    if (docked)
+                    {
+                        connect(
+                            sdw,
+                            &ScriptDockWidget::statusBarInformationChanged,
+                            this,
+                            &MainWindow::scriptStatusBarInformationChanged
+                        );
+                    }
+                    else
+                    {
+                        disconnect(sdw, &ScriptDockWidget::statusBarInformationChanged, this, 0);
+                    }
+                }
+            );
+
+
+        }
+
         if (area == Qt::NoDockWidgetArea)
         {
             addDockWidget(Qt::TopDockWidgetArea, dockWidget);
@@ -745,6 +772,17 @@ void MainWindow::addAbstractDock(
             // qDebug() << "restoreDockWidget:" << restoreDockWidget(dockWidget); //does not work
             // until now, since the state of docked script windows is not saved. they are deleted
             // before destructing the main window.
+
+            if (sdw)
+            {
+                // make the connection right here, since dockStateChanged is only called after the next change
+                connect(
+                    sdw,
+                    &ScriptDockWidget::statusBarInformationChanged,
+                    this,
+                    &MainWindow::scriptStatusBarInformationChanged
+                );
+            }
         }
     }
 }
@@ -762,8 +800,57 @@ void MainWindow::removeAbstractDock(AbstractDockWidget* dockWidget)
 {
     if (dockWidget)
     {
-        dockWidget->setParent(NULL);
+        ScriptDockWidget* sdw = qobject_cast<ScriptDockWidget*>(dockWidget);
+
+        if (sdw)
+        {
+            disconnect(sdw, &ScriptDockWidget::statusBarInformationChanged, this, 0);
+        }
+
+        dockWidget->setParent(nullptr);
         removeDockWidget(dockWidget);
+    }
+}
+
+//-------------------------------------------------------------------------------------
+void MainWindow::scriptStatusBarInformationChanged(
+    const QPointer<ScriptDockWidget> sourceDockWidget,
+    const QString& encoding,
+    int line,
+    int column)
+{
+    if (m_pStatusLblScriptInfo)
+    {
+        QObject* widget = QApplication::focusWidget();
+        ScriptDockWidget *focussedDockWidget = nullptr;
+
+        while (widget)
+        {
+            focussedDockWidget = qobject_cast<ScriptDockWidget*>(widget);
+
+            if (focussedDockWidget)
+            {
+                break;
+            }
+
+            widget = widget->parent();
+        }
+
+        if (focussedDockWidget && sourceDockWidget && focussedDockWidget != sourceDockWidget.data())
+        {
+            // this information belongs to a script dock widget, that does currently not
+            // have the focus. Ignore it.
+            return;
+        }
+
+        if (line >= 0 && column >= 0)
+        {
+            m_pStatusLblScriptInfo->setText(tr("Ln %1, Col %2, %3 ").arg(line).arg(column).arg(encoding));
+        }
+        else
+        {
+            m_pStatusLblScriptInfo->setText("");
+        }
     }
 }
 
@@ -857,6 +944,12 @@ void MainWindow::createActions()
     m_aboutQitom = new QAction(
         QIcon(":/application/icons/itomicon/itomLogo3_64.png"), tr("About itom..."), this);
     connect(m_aboutQitom, SIGNAL(triggered()), this, SLOT(mnuAboutQitom()));
+
+    if (AppManagement::getLogger())
+    {
+        m_copyLog = new QAction(tr("Copy Log..."), this);
+        connect(m_copyLog, SIGNAL(triggered()), this, SLOT(mnuCopyLog()));
+    }
 
     m_actions["show_loaded_plugins"] =
         new QAction(QIcon(":/plugins/icons/plugin.png"), tr("Loaded Plugins..."), this);
@@ -1119,6 +1212,10 @@ void MainWindow::createMenus()
 
     m_pMenuHelp->addAction(m_aboutQt);
     m_pMenuHelp->addAction(m_aboutQitom);
+    if (m_copyLog)
+    {
+        m_pMenuHelp->addAction(m_copyLog);
+    }
 
     // linux: in some linux distributions, the menu bar did not appear if it is displayed
     // on top of the desktop. Therefore, native menu bars (as provided by the OS) are disabled here.
@@ -1335,6 +1432,9 @@ void MainWindow::raiseFigureByHandle(int handle)
 //! initializes status bar
 void MainWindow::createStatusBar()
 {
+    m_pStatusLblScriptInfo = new QLabel("", this);
+    statusBar()->addPermanentWidget(m_pStatusLblScriptInfo);
+
     ito::UserOrganizer* uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
     QLabel* userLabel = new QLabel(tr("User: %1   ").arg(uOrg->getCurrentUserName()));
     userLabel->setToolTip(
@@ -1582,6 +1682,7 @@ void MainWindow::showAssistant(
         {
             m_helpViewer = QPointer<HelpViewer>(new HelpViewer(NULL));
             // m_helpViewer->setAttribute(Qt::WA_DeleteOnClose, true);
+            // reopening help leads to empty help site
         }
         m_helpViewer->setCollectionFile(collectionFile_);
         if (!showUrl.isEmpty())
@@ -1623,11 +1724,7 @@ void MainWindow::showAssistant(
 
                 process->start(app, args);
 
-                connect(
-                    process,
-                    SIGNAL(error(QProcess::ProcessError)),
-                    this,
-                    SLOT(helpAssistantError(QProcess::ProcessError)));
+                connect(process, &QProcess::errorOccurred, this, &MainWindow::helpAssistantError);
             }
         }
         else
@@ -1714,6 +1811,46 @@ void MainWindow::mnuAboutQitom()
     DialogAboutQItom* dlgAbout = new DialogAboutQItom(versionList);
     dlgAbout->exec();
     DELETE_AND_SET_NULL(dlgAbout);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::mnuCopyLog()
+{
+    QString directory = QFileDialog::getExistingDirectory(this, tr("Select directory"));
+    if (!directory.isEmpty())
+    {
+        QObject* logger;
+        logger = AppManagement::getLogger();
+        if (logger)
+        {
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QMetaObject::invokeMethod(
+                logger,
+                "copyLog",
+                Q_ARG(QString, directory),
+                Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            if (!locker.getSemaphore()->wait(PLUGINWAIT))
+            {
+                QMessageBox::critical(this, tr("Timeout"), tr("Timeout while executing copyLog."));
+            }
+            else
+            {
+                ito::RetVal retVal = locker.getSemaphore()->returnValue;
+                if (retVal.containsWarningOrError())
+                {
+                    QMessageBox::critical(
+                        this, tr("Error while copying log"), retVal.errorMessage());
+                }
+                else
+                {
+                    QMessageBox::information(
+                        this,
+                        tr("Logs copied"),
+                        tr("The log files were copied successfully to %1").arg(directory));
+                }
+            }
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2465,6 +2602,7 @@ void MainWindow::mnuPyPipManager()
 void MainWindow::currentDirectoryChanged()
 {
     QString cd = QDir::cleanPath(QDir::currentPath());
+
     if (m_pStatusLblCurrentDir)
     {
         m_pStatusLblCurrentDir->setText(tr("Current Directory: %1").arg(cd));
@@ -2571,11 +2709,7 @@ void MainWindow::mnuShowDesigner()
 
             process->setProcessEnvironment(env);
 
-            connect(
-                process,
-                SIGNAL(error(QProcess::ProcessError)),
-                this,
-                SLOT(designerError(QProcess::ProcessError)));
+            connect(process, &QProcess::errorOccurred, this, &MainWindow::designerError);
 
             po->clearStandardOutputBuffer(appName);
 
