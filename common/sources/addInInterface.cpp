@@ -40,6 +40,7 @@
 
 #include "opencv2/opencv.hpp"
 
+#include <iostream>
 
 #if defined _DEBUG  && defined(_MSC_VER) && defined(VISUAL_LEAK_DETECTOR_CMAKE)
     #include "vld.h"

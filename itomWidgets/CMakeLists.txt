@@ -47,7 +47,6 @@ itom_find_package_qt(OFF #no automoc for Qt5, aber unten wird er angeschalten?! 
         Widgets
         Svg
         Xml
-        Designer
         PrintSupport
         LinguistTools
         )

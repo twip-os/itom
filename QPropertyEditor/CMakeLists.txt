@@ -41,7 +41,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURC
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # add 3rd party packages
-itom_find_package_qt(ON Core PrintSupport Widgets Designer Xml Svg UiTools)
+itom_find_package_qt(ON Core PrintSupport Widgets Xml Svg UiTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
 
 # set some preprocessor directives

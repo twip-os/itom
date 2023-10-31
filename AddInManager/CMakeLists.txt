@@ -38,7 +38,7 @@ itom_init_core_common_vars()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/../cmake)
 
 # add 3rd party packages
-itom_find_package_qt(ON Core Widgets Xml Designer Svg PrintSupport LinguistTools)
+itom_find_package_qt(ON Core Widgets Xml Svg LinguistTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
 
 # set some preprocessor directives
