@@ -43,6 +43,10 @@ itom_init_core_common_vars()
 option(BUILD_WITH_PYMATLAB "Build itom with integrated python module 'matlab' to control and use Matlab within itom." OFF)
 option(BUILD_WITH_HELPVIEWER "Build itom with help viewer for the itom documentation (only >= Qt 5.6.0)." ON)
 option(BUILD_WITH_GIMMICKS "Build itom with gimmicks." ON)
+option(BUILD_WITH_SPECIFICSPLASHSCREEN "Build with a user defined splashscreen." OFF)
+option(BUILD_WITH_SPECIFICSPLASHSCREENTEXT "Build with a user defined splashscreen text color." OFF)
+option(BUILD_WITH_SPECIFICSPLASHSCREENTEXTPOSITION "Build with a user defined splashscreen text position." OFF)
+option(BUILD_WITH_ICON "Build with a user defined app icon." OFF)
 option(CONSIDER_GIT_SVN "If ON GIT version history will be considered." ON)
 
 set(CMAKE_MODULE_PATH
@@ -112,6 +116,32 @@ endif()
 
 if(BUILD_WITH_PYMATLAB)
     add_definitions(-DUSEPYMATLAB -D_USEPYMATLAB)
+endif()
+
+if(BUILD_WITH_SPECIFICSPLASHSCREEN)
+    set(SPLASHSCREEN_FILE_PATH CACHE FILEPATH "Path to the splashscreen image")
+    add_definitions(-DUSESPLASHSCREENFILE -D_USESPLASHSCREENFILE)
+    add_definitions(-DSPLASHSCREEN_FILE_PATH=${SPLASHSCREEN_FILE_PATH})
+endif()
+
+if(BUILD_WITH_SPECIFICSPLASHSCREENTEXT)
+    set(SPLASHSCREEN_TEXT_COLOR CACHE STRING "ARGB Color Code for Splashescreen text as hexcode AARRGGBB")
+    add_definitions(-DUSESPLASHSCREENTEXTCOLOR -D_USESPLASHSCREENTEXTCOLOR)
+    add_definitions(-DSPLASHSCREEN_TEXT_COLOR=${SPLASHSCREEN_TEXT_COLOR})
+endif()
+
+if(BUILD_WITH_SPECIFICSPLASHSCREENTEXTPOSITION)
+    set(SPLASHSCREEN_TEXT_POSITION_HORIZONTAL CACHE STRING "Relativ splashscreen text postion in horizontal direction. Value in percent (0.0-1.0)")
+    set(SPLASHSCREEN_TEXT_POSITION_VERTICAL CACHE STRING "Relativ splashscreen text postion in horizontal direction. Value in percent (0.0-1.0)")
+    add_definitions(-DUSESPLASHSCREENTEXTPOSITION -D_USESPLASHSCREENTEXTPOSITION)
+    add_definitions(-DSPLASHSCREEN_TEXT_POSITION_HOR=${SPLASHSCREEN_TEXT_POSITION_HORIZONTAL})
+    add_definitions(-DSPLASHSCREEN_TEXT_POSITION_VER=${SPLASHSCREEN_TEXT_POSITION_VERTICAL})
+endif()
+
+if(BUILD_WITH_ICON)
+    set(ICON_FILE_PATH CACHE FILEPATH "Path to the app icon image")
+    add_definitions(-DUSEAPPICON -D_USEAPPICON)
+    add_definitions(-DAPPICON_FILE_PATH=${ICON_FILE_PATH})
 endif()
 
 if(BUILD_WITH_GIMMICKS)

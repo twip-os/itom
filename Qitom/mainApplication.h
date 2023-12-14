@@ -100,6 +100,7 @@ class MainApplication : public QObject
 
         QString getSplashScreenFileName() const;
         QPixmap getSplashScreenPixmap() const;
+        QColor getSplashScreenTextColor() const;
 
     signals:
         void propertiesChanged();

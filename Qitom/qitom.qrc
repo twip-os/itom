@@ -260,4 +260,5 @@
         <file>address.html</file>
         <file>COPYING.txt</file>
     </qresource>
+    <qresource prefix="/twip"/>
 </RCC>
