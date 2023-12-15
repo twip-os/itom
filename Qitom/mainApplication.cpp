@@ -134,8 +134,8 @@ MainApplication::MainApplication(tGuiType guiType) :
     AppManagement::setMainApplication(qobject_cast<QObject*>(this));
 
     //global settings: the settings file will be stored in itomSettings/{organization}/{applicationName}.ini
-    QCoreApplication::setOrganizationName("ito");
-    QCoreApplication::setApplicationName("itom");
+    QCoreApplication::setOrganizationName("twip optical solutions GmbH");
+    QCoreApplication::setApplicationName("twip itom");
     QCoreApplication::setApplicationVersion(ITOM_VERSION_STR);
 }
 
