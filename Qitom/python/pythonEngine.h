@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2020, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2023, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -20,8 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef PYTHONENGINE_H
-#define PYTHONENGINE_H
+#pragma once
 
 /*if you add any include to this file you will DIE an immediate, horrible, painful death*/
 
@@ -165,6 +164,9 @@ public:
     //!< thread-safe method (can be called from any thread) to enqueue a jedi get-help request
     void enqueueJediGetHelpRequest(const ito::JediGetHelpRequest &request);
 
+    //!< thread-safe method (can be called from any thread) to enqueue a jedi rename request
+    void enqueueJediRenameRequest(const ito::JediRenameRequest& request);
+
     static bool isInterruptQueued();
     static const PythonEngine *getInstance();
 
@@ -280,6 +282,7 @@ private:
     PyObject* getAndCheckIdentifier(const QString &identifier, ito::RetVal &retval) const;
 
 	QVariantMap checkCodeCheckerRequirements();
+    ito::RetVal handlePythonSysExit();
 
 	struct CodeCheckerOptions
 	{
@@ -441,6 +444,3 @@ public slots:
 };
 
 } //end namespace ito
-
-
-#endif
