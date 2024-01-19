@@ -1006,11 +1006,11 @@ void ScriptEditorWidget::dropEvent(QDropEvent* event)
                 QMimeData mimeData;
                 mimeData.setText("");
                 QDropEvent dummyEvent(
-                    event->position(),
+                    event->pos(),
                     event->possibleActions(),
                     &mimeData,
-                    event->buttons(),
-                    event->modifiers());
+                    event->mouseButtons(),
+                    event->keyboardModifiers());
                 AbstractCodeEditorWidget::dropEvent(&dummyEvent);
             }
             else
