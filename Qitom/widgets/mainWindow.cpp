@@ -881,7 +881,7 @@ void MainWindow::connectPythonMessageBox(QListWidget* pythonMessageBox)
 */
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-    emit(mainWindowCloseRequest());
+    emit(mainWindowCloseRequest(true));
     event->ignore(); //!< if mainWindowCloseRequest is handled and accepted by mainApplication,
                      //!< MainWindow will be destroyed
 }
@@ -2831,7 +2831,7 @@ void MainWindow::mnuShowLoadedPlugins()
 void MainWindow::mnuExitApplication()
 {
     // does not call the closeEvent-method!
-    emit(mainWindowCloseRequest());
+    emit(mainWindowCloseRequest(true));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
