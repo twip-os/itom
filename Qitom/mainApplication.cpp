@@ -351,7 +351,7 @@ QPixmap MainApplication::getSplashScreenPixmap() const
     float textTopPos = pixmap.height() * SPLASHSCREEN_TEXT_POSITION_VER;
 #else
     float textLeftPos = pixmap.width() * 0.455;
-    float textTopPos = pixmap.height() * 0.63
+    float textTopPos = pixmap.height() * 0.63;
 #endif
     
 
