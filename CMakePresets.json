@@ -51,7 +51,8 @@
                 "CMAKE_EXPORT_COMPILE_COMMANDS": true,
                 "CMAKE_CXX_FLAGS": "-Wno-psabi",
                 "CMAKE_BUILD_TYPE": "Release",
-                "Boost_INCLUDE_DIR": "/usr/include"
+                "Boost_INCLUDE_DIR": "/usr/include",
+                "BUILD_QT_VERSION": "Qt5"
             }
         },
         {
