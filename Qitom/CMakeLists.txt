@@ -64,7 +64,7 @@ endif()
 
 if(${BUILD_WITH_HELPVIEWER})
     #requires Qt5 and Qt5WebEngine in order to built a built-in help viewer, since QtAssistant only has a limited set of rendering options since Qt5.6.
-    itom_find_package_qt(ON Core Concurrent Widgets UiTools PrintSupport Network Sql Xml Svg WebEngineWidgets Help LinguistTools)
+    itom_find_package_qt(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg WebEngineWidgets Help Designer LinguistTools)
 
     if(Qt5WebEngineWidgets_FOUND OR Qt6WebEngineWidgets_FOUND)
         add_definitions(-DUSEHELPVIEWER -D_USEHELPVIEWER)
@@ -73,7 +73,7 @@ if(${BUILD_WITH_HELPVIEWER})
     endif()
 else()
     #uses the old QtAssistant as help viewer.
-    itom_find_package_qt(ON Core Concurrent Widgets UiTools PrintSupport Network Sql Xml Svg LinguistTools)
+    itom_find_package_qt(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg Designer LinguistTools)
 endif()
 
 find_package(Python 3.7 REQUIRED COMPONENTS Interpreter Development NumPy)
