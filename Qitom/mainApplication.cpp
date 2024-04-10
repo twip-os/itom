@@ -134,8 +134,8 @@ MainApplication::MainApplication(tGuiType guiType) :
     AppManagement::setMainApplication(qobject_cast<QObject*>(this));
 
     //global settings: the settings file will be stored in itomSettings/{organization}/{applicationName}.ini
-    QCoreApplication::setOrganizationName("ito");
-    QCoreApplication::setApplicationName("itom");
+    QCoreApplication::setOrganizationName("twip optical solutions GmbH");
+    QCoreApplication::setApplicationName("twip itom");
     QCoreApplication::setApplicationVersion(ITOM_VERSION_STR);
 }
 
@@ -248,10 +248,24 @@ QString MainApplication::getSplashScreenFileName() const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+QColor MainApplication::getSplashScreenTextColor() const
+{
+#ifdef USESPLASHSCREENTEXTCOLOR
+    QColor textColor = QColor::fromRgba(QRgb(SPLASHSCREEN_TEXT_COLOR));
+#else
+    QColor textColor = Qt::white;
+#endif // USEUSEGIMMICKS
+
+    return textColor;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 QPixmap MainApplication::getSplashScreenPixmap() const
 {
 #ifdef USEGIMMICKS
     QString splashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and christmas time
+#elif USESPLASHSCREENFILE
+    QString splashScreenFileName = SPLASHSCREEN_FILE_PATH;
 #else
     QString splashScreenFileName = ":/application/icons/itomicon/splashScreen4.png"; //only default splashScreen
 #endif // USEUSEGIMMICKS
@@ -331,13 +345,31 @@ QPixmap MainApplication::getSplashScreenPixmap() const
         }
     }
 
+    
+#ifdef USESPLASHSCREENTEXTPOSITION
+    float textLeftPos = pixmap.width() * SPLASHSCREEN_TEXT_POSITION_HOR;
+    float textTopPos = pixmap.height() * SPLASHSCREEN_TEXT_POSITION_VER;
+#else
     float textLeftPos = pixmap.width() * 0.455;
+    float textTopPos = pixmap.height() * 0.63;
+#endif
+    
+
+    QRectF rectItom(
+        textLeftPos,
+        textTopPos,
+        pixmap.width() - textLeftPos,
+        pixmap.height() * 0.1); // relative position of the version text within the image
+    QFont fontItom;
+    fontItom.setPixelSize(pixmap.width() * 0.02);
+    p.setFont(fontItom);
+    p.drawText(rectItom, Qt::AlignLeft, "itom Software");
 
     QRectF rectVersion(
         textLeftPos,
-        pixmap.height() * 0.63,
+        rectItom.top() + fontItom.pixelSize()*1.05,
         pixmap.width() - textLeftPos,
-        pixmap.height() * 0.1); // relative position of the version text within the image
+        pixmap.height() * 0.2); // relative position of the version text within the image
     QFont fontVersion;
     fontVersion.setPixelSize(pixmap.width() * 0.022);
     p.setFont(fontVersion);
@@ -345,9 +377,9 @@ QPixmap MainApplication::getSplashScreenPixmap() const
 
     QRectF rectBuild(
         textLeftPos,
-        rectVersion.top() * 1.08,
+        rectVersion.top() + fontVersion.pixelSize() * 1.05,
         pixmap.width() - textLeftPos,
-        pixmap.height() * 0.2);
+        pixmap.height() * 0.3);
     QFont fontBuild;
     fontBuild.setPixelSize(pixmap.width() * 0.02);
     p.setFont(fontBuild);
@@ -376,6 +408,10 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     registerMetaObjects();
 
     QLocale::setDefault(QLocale("en_EN"));
+
+    QColor splashScreenTextColor= getSplashScreenTextColor();
+
+    m_splashScreenTextColor = splashScreenTextColor;
 
     QPixmap pixmap = getSplashScreenPixmap();
 

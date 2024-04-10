@@ -23,17 +23,17 @@ BEGIN
     BEGIN
         BLOCK   "040904b0"
         BEGIN
-            VALUE   "CompanyName",      "Institut fuer Technische Optik, University Stuttgart\0"
-            VALUE   "FileDescription",  "ITO Measurement Program\0"
+            VALUE   "CompanyName",      "twip optical solutions GmbH\0"
+            VALUE   "FileDescription",  "twip ITO Measurement Program\0"
             VALUE   "FileVersion",      "${ITOM_VERSION_STRING}\0"
-            VALUE   "InternalName",     "itom\0"
+            VALUE   "InternalName",     "twip itom\0"
             VALUE   "LegalCopyright",   "Copyright under LGPL v2.0 with itom-exception\0"
 #ifdef _DEBUG
             VALUE   "OriginalFilename", "qitomd.exe\0"
 #else
             VALUE   "OriginalFilename", "qitom.exe\0"
 #endif
-            VALUE   "ProductName",      "itom\0"
+            VALUE   "ProductName",      "twip itom\0"
             VALUE   "ProductVersion",   "${ITOM_VERSION_STRING} with ${ITOM_VERSION_STRING_WITH_API}\0"
         END
     END

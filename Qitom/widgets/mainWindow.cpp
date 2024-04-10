@@ -117,7 +117,12 @@ MainWindow::MainWindow() :
     // Setting high res icon for OS X
     QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/itomIcon1024"));
 #else
-    QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/itomLogo3_64.png"));
+    #ifdef USEAPPICON
+        QApplication::setWindowIcon(QIcon(APPICON_FILE_PATH));
+    #else
+        QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/itologo64.png"));
+    #endif
+    //QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/itomLogo3_64.png"));
 #endif
 
     qDebug("build main window");
