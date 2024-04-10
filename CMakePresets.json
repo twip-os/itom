@@ -7,16 +7,13 @@
             "binaryDir": "${sourceDir}/../../build/itom",
             "cacheVariables": {
                 "BUILD_TARGET64": true,
-                "BUILD_WITH_ICON": true,
-                "BUILD_WITH_SPECIFICSPLASHSCREEN": true,
-                "BUILD_WITH_SPECIFICSPLASHSCREENTEXT": true,
-                "BUILD_WITH_SPECIFICSPLASHSCREENTEXTPOSITION": true,
                 "Boost_NO_WARN_NEW_VERSIONS": true,
-                "ICON_FILE_PATH": "${sourceDir}/../../misc/styles_and_settings/twipHaken.png",
-                "SPLASHSCREEN_FILE_PATH": "${sourceDir}/../../misc/styles_and_settings/SplashscreenDesktop.png",
-                "SPLASHSCREEN_TEXT_COLOR": "0xFF000000",
-                "SPLASHSCREEN_TEXT_POSITION_HORIZONTAL": "0.4",
-                "SPLASHSCREEN_TEXT_POSITION_VERTICAL": "0.7"
+                "BUILD_WITH_GIMMICKS": false,
+                "CUSTOM_APP_ICON": "${sourceDir}/../../misc/styles_and_settings/twipHaken.png",
+                "SPLASH_SCREEN_CUSTOM_IMAGE": "${sourceDir}/../../misc/styles_and_settings/splashScreenDesktop.png",
+                "SPLASH_SCREEN_TEXT_COLOR": "0xFF000000",
+                "SPLASH_SCREEN_TEXT_POSITION_HORIZONTAL": "0.4",
+                "SPLASH_SCREEN_TEXT_POSITION_VERTICAL": "0.7"
             }
         },
         {

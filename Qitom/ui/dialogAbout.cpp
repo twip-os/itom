@@ -55,12 +55,16 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap, QWi
     bool hasAdditionalEdition = false;
 
     ui.setupUi(this);
-    QPixmap pixmap("C:/consignoDevelop/misc/styles_and_settings/twip_logo.png");
-    pixmap = pixmap.scaledToWidth(64, Qt::SmoothTransformation);
-    
+
     ui.itomLogo->setPixmap(QPixmap(QString::fromUtf8(":/application/icons/itomicon/itomLogo3_64.png")));
+
+#ifdef USE_CUSTOM_APP_ICON
+    QPixmap pixmap(":/application/icons/customAppIcon.png");
+    pixmap = pixmap.scaledToWidth(64, Qt::SmoothTransformation);
+#else
+    QPixmap pixmap(QString::fromUtf8(":/application/icons/itomicon/itologo64.png"));
+#endif
     ui.ITOLogo->setPixmap(pixmap);
-    
 
     QMapIterator<QString, QString> i(versionMap);
     while (i.hasNext())

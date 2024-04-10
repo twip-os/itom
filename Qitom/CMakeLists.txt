@@ -43,11 +43,13 @@ itom_init_core_common_vars()
 option(BUILD_WITH_PYMATLAB "Build itom with integrated python module 'matlab' to control and use Matlab within itom." OFF)
 option(BUILD_WITH_HELPVIEWER "Build itom with help viewer for the itom documentation (only >= Qt 5.6.0)." ON)
 option(BUILD_WITH_GIMMICKS "Build itom with gimmicks." ON)
-option(BUILD_WITH_SPECIFICSPLASHSCREEN "Build with a user defined splashscreen." OFF)
-option(BUILD_WITH_SPECIFICSPLASHSCREENTEXT "Build with a user defined splashscreen text color." OFF)
-option(BUILD_WITH_SPECIFICSPLASHSCREENTEXTPOSITION "Build with a user defined splashscreen text position." OFF)
-option(BUILD_WITH_ICON "Build with a user defined app icon." OFF)
 option(CONSIDER_GIT_SVN "If ON GIT version history will be considered." ON)
+
+set(CUSTOM_APP_ICON "" CACHE FILEPATH "Path to an app icon image. Leave empty to use the default icon.")
+set(SPLASH_SCREEN_CUSTOM_IMAGE "" CACHE FILEPATH "Path to a splash screen image. Leave empty to use the default splash screen.")
+set(SPLASH_SCREEN_TEXT_COLOR "" CACHE STRING "ARGB Color Code for splash screen text as hex code 0xAARRGGBB.")
+set(SPLASH_SCREEN_TEXT_POSITION_HORIZONTAL "" CACHE STRING "Relative splash screen text postion in horizontal direction. Value in percent (0.0-1.0)")
+set(SPLASH_SCREEN_TEXT_POSITION_VERTICAL "" CACHE STRING "Relative splash screen text postion in horizontal direction. Value in percent (0.0-1.0)")
 
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
@@ -118,51 +120,41 @@ if(BUILD_WITH_PYMATLAB)
     add_definitions(-DUSEPYMATLAB -D_USEPYMATLAB)
 endif()
 
-if(BUILD_WITH_SPECIFICSPLASHSCREEN)
-    set(SPLASHSCREEN_FILE_PATH CACHE FILEPATH "Path to the splashscreen image")
-    if(SPLASHSCREEN_FILE_PATH STREQUAL "")
-       message(FATAL_ERROR "SPLASHSCREEN_FILE_PATH not set")
-    else()
-       add_definitions(-DUSESPLASHSCREENFILE -D_USESPLASHSCREENFILE)
-       add_definitions(-DSPLASHSCREEN_FILE_PATH="${SPLASHSCREEN_FILE_PATH}")
-    endif()
+if(SPLASH_SCREEN_CUSTOM_IMAGE)
+    add_definitions(-DUSE_CUSTOM_SPLASH_SCREEN)
+    file(RELATIVE_PATH
+        SPLASH_SCREEN_CUSTOM_IMAGE_REL
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${SPLASH_SCREEN_CUSTOM_IMAGE}
+    )
 endif()
 
-if(BUILD_WITH_SPECIFICSPLASHSCREENTEXT)
-    set(SPLASHSCREEN_TEXT_COLOR CACHE STRING "ARGB Color Code for Splashescreen text as hexcode AARRGGBB")
-    if(SPLASHSCREEN_TEXT_COLOR STREQUAL "")
-       message(FATAL_ERROR "SPLASHSCREEN_TEXT_COLOR not set")
-    else()
-       add_definitions(-DUSESPLASHSCREENTEXTCOLOR -D_USESPLASHSCREENTEXTCOLOR)
-       add_definitions(-DSPLASHSCREEN_TEXT_COLOR=${SPLASHSCREEN_TEXT_COLOR})
-    endif()
+if(SPLASH_SCREEN_TEXT_COLOR)
+    add_definitions(-DSPLASH_SCREEN_TEXT_COLOR=${SPLASH_SCREEN_TEXT_COLOR})
 endif()
 
-if(BUILD_WITH_SPECIFICSPLASHSCREENTEXTPOSITION)
-    set(SPLASHSCREEN_TEXT_POSITION_HORIZONTAL CACHE STRING "Relativ splashscreen text postion in horizontal direction. Value in percent (0.0-1.0)")
-    set(SPLASHSCREEN_TEXT_POSITION_VERTICAL CACHE STRING "Relativ splashscreen text postion in horizontal direction. Value in percent (0.0-1.0)")
-    add_definitions(-DUSESPLASHSCREENTEXTPOSITION -D_USESPLASHSCREENTEXTPOSITION)
-    if(SPLASHSCREEN_TEXT_POSITION_HORIZONTAL STREQUAL "")
-       message(FATAL_ERROR "SPLASHSCREEN_TEXT_POSITION_HORIZONTAL not set")
-    else()
-      add_definitions(-DSPLASHSCREEN_TEXT_POSITION_HOR=${SPLASHSCREEN_TEXT_POSITION_HORIZONTAL})
-    endif()
-    if(SPLASHSCREEN_TEXT_POSITION_VERTICAL STREQUAL "")
-       message(FATAL_ERROR "SPLASHSCREEN_TEXT_POSITION_VERTICAL not set")
-    else()
-      add_definitions(-DSPLASHSCREEN_TEXT_POSITION_VER=${SPLASHSCREEN_TEXT_POSITION_VERTICAL})
-    endif()
+if(SPLASH_SCREEN_TEXT_POSITION_HORIZONTAL)
+    add_definitions(-DSPLASH_SCREEN_TEXT_POSITION_HORIZONTAL=${SPLASH_SCREEN_TEXT_POSITION_HORIZONTAL})
 endif()
 
-if(BUILD_WITH_ICON)
-    set(ICON_FILE_PATH CACHE FILEPATH "Path to the app icon image")
-    if(ICON_FILE_PATH STREQUAL "")
-       message(FATAL_ERROR "ICON_FILE_PATH not set")
-    else()
-      add_definitions(-DUSEAPPICON -D_USEAPPICON)
-      add_definitions(-DAPPICON_FILE_PATH="${ICON_FILE_PATH}")
-    endif()
+if(SPLASH_SCREEN_TEXT_POSITION_VERTICAL)
+    add_definitions(-DSPLASH_SCREEN_TEXT_POSITION_VERTICAL=${SPLASH_SCREEN_TEXT_POSITION_VERTICAL})
 endif()
+
+if(CUSTOM_APP_ICON)
+    add_definitions(-DUSE_CUSTOM_APP_ICON)
+    file(RELATIVE_PATH
+        CUSTOM_APP_ICON_REL
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CUSTOM_APP_ICON}
+    )
+endif()
+
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/qitom.qrc.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/qitom.qrc
+    @ONLY
+)
 
 if(BUILD_WITH_GIMMICKS)
     add_definitions(-DUSEGIMMICKS -D_USEGIMMICKS)

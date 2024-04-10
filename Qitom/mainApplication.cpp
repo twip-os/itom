@@ -250,8 +250,8 @@ QString MainApplication::getSplashScreenFileName() const
 //----------------------------------------------------------------------------------------------------------------------------------
 QColor MainApplication::getSplashScreenTextColor() const
 {
-#ifdef USESPLASHSCREENTEXTCOLOR
-    QColor textColor = QColor::fromRgba(QRgb(SPLASHSCREEN_TEXT_COLOR));
+#ifdef SPLASH_SCREEN_TEXT_COLOR
+    QColor textColor = QColor::fromRgba(QRgb(SPLASH_SCREEN_TEXT_COLOR));
 #else
     QColor textColor = Qt::white;
 #endif // USEUSEGIMMICKS
@@ -264,8 +264,8 @@ QPixmap MainApplication::getSplashScreenPixmap() const
 {
 #ifdef USEGIMMICKS
     QString splashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and christmas time
-#elif USESPLASHSCREENFILE
-    QString splashScreenFileName = SPLASHSCREEN_FILE_PATH;
+#elif USE_CUSTOM_SPLASH_SCREEN
+    QString splashScreenFileName = ":/application/icons/customSplashScreen.png";
 #else
     QString splashScreenFileName = ":/application/icons/itomicon/splashScreen4.png"; //only default splashScreen
 #endif // USEUSEGIMMICKS
@@ -346,14 +346,16 @@ QPixmap MainApplication::getSplashScreenPixmap() const
     }
 
     
-#ifdef USESPLASHSCREENTEXTPOSITION
-    float textLeftPos = pixmap.width() * SPLASHSCREEN_TEXT_POSITION_HOR;
-    float textTopPos = pixmap.height() * SPLASHSCREEN_TEXT_POSITION_VER;
+#ifdef SPLASH_SCREEN_TEXT_POSITION_HORIZONTAL
+    float textLeftPos = pixmap.width() * SPLASH_SCREEN_TEXT_POSITION_HORIZONTAL;
 #else
     float textLeftPos = pixmap.width() * 0.455;
+#endif
+#ifdef SPLASH_SCREEN_TEXT_POSITION_VERTICAL
+    float textTopPos = pixmap.height() * SPLASH_SCREEN_TEXT_POSITION_VERTICAL;
+#else
     float textTopPos = pixmap.height() * 0.63;
 #endif
-    
 
     QRectF rectItom(
         textLeftPos,
