@@ -45,6 +45,12 @@ option(BUILD_WITH_HELPVIEWER "Build itom with help viewer for the itom documenta
 option(BUILD_WITH_GIMMICKS "Build itom with gimmicks." ON)
 option(CONSIDER_GIT_SVN "If ON GIT version history will be considered." ON)
 
+set(CUSTOM_APP_ICON "" CACHE FILEPATH "Path to an app icon image. Leave empty to use the default icon.")
+set(SPLASH_SCREEN_CUSTOM_IMAGE "" CACHE FILEPATH "Path to a splash screen image. Leave empty to use the default splash screen.")
+set(SPLASH_SCREEN_TEXT_COLOR "" CACHE STRING "ARGB Color Code for splash screen text as hex code 0xAARRGGBB.")
+set(SPLASH_SCREEN_TEXT_POSITION_HORIZONTAL "" CACHE STRING "Relative splash screen text postion in horizontal direction. Value in percent (0.0-1.0)")
+set(SPLASH_SCREEN_TEXT_POSITION_VERTICAL "" CACHE STRING "Relative splash screen text postion in horizontal direction. Value in percent (0.0-1.0)")
+
 set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH}
     ${PROJECT_SOURCE_DIR}
@@ -113,6 +119,42 @@ endif()
 if(BUILD_WITH_PYMATLAB)
     add_definitions(-DUSEPYMATLAB -D_USEPYMATLAB)
 endif()
+
+if(SPLASH_SCREEN_CUSTOM_IMAGE)
+    add_definitions(-DUSE_CUSTOM_SPLASH_SCREEN)
+    file(RELATIVE_PATH
+        SPLASH_SCREEN_CUSTOM_IMAGE_REL
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${SPLASH_SCREEN_CUSTOM_IMAGE}
+    )
+endif()
+
+if(SPLASH_SCREEN_TEXT_COLOR)
+    add_definitions(-DSPLASH_SCREEN_TEXT_COLOR=${SPLASH_SCREEN_TEXT_COLOR})
+endif()
+
+if(SPLASH_SCREEN_TEXT_POSITION_HORIZONTAL)
+    add_definitions(-DSPLASH_SCREEN_TEXT_POSITION_HORIZONTAL=${SPLASH_SCREEN_TEXT_POSITION_HORIZONTAL})
+endif()
+
+if(SPLASH_SCREEN_TEXT_POSITION_VERTICAL)
+    add_definitions(-DSPLASH_SCREEN_TEXT_POSITION_VERTICAL=${SPLASH_SCREEN_TEXT_POSITION_VERTICAL})
+endif()
+
+if(CUSTOM_APP_ICON)
+    add_definitions(-DUSE_CUSTOM_APP_ICON)
+    file(RELATIVE_PATH
+        CUSTOM_APP_ICON_REL
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CUSTOM_APP_ICON}
+    )
+endif()
+
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/qitom.qrc.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/qitom.qrc
+    @ONLY
+)
 
 if(BUILD_WITH_GIMMICKS)
     add_definitions(-DUSEGIMMICKS -D_USEGIMMICKS)

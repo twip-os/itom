@@ -378,3 +378,4 @@ Makefile*
 
 .clang-tid
 *.bak
+/Qitom/qitom.qrc
