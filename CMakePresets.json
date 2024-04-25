@@ -59,7 +59,12 @@
                 "CMAKE_EXPORT_COMPILE_COMMANDS": true,
                 "CMAKE_CXX_FLAGS": "-Wno-psabi",
                 "CMAKE_BUILD_TYPE": "Release",
-                "CONSIDER_GIT_SVN": false
+                "CONSIDER_GIT_SVN": false,
+                "CUSTOM_APP_ICON": null,
+                "SPLASH_SCREEN_CUSTOM_IMAGE": null,
+                "SPLASH_SCREEN_TEXT_COLOR": null,
+                "SPLASH_SCREEN_TEXT_POSITION_HORIZONTAL": null,
+                "SPLASH_SCREEN_TEXT_POSITION_VERTICAL": null
             }
         },
         {
