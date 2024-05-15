@@ -124,7 +124,9 @@ The packages *xsdcxx* and *libxerces-c-dev* are only required for building the o
 should install its runtime package *libxerces-c3.2* (or similar).
 
 **Qt5:**
+
 .. code-block:: bash
+
     sudo apt install libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 \
         libqt5concurrent5 qttools5-dev-tools qttools5-dev
     sudo apt install qtwebengine5-dev libqt5webengine5 libqt5webenginewidgets5 # not possible on raspbian
@@ -136,7 +138,9 @@ If you want to compile |itom| with support from the Point Cloud Library, also ge
     sudo apt install libpcl-dev libproj-dev
 
 **Qt6:**
+
 .. code-block:: bash
+
     sudo apt install qt6-wayland
     sudo apt install qt6-base-dev qt6-tools-dev-tools qt6-tools-dev libqt6svg6 libqt6svg6-dev
     sudo apt install qt6-webengine-dev
@@ -145,12 +149,16 @@ Since the Qt webengine is not available (yet) on **Rasbpian** (at least for Rasp
 you cannot get the webengine libraries. Therfore the update commands look like this:
 
 **Qt5:**
+
 .. code-block:: bash
+
     sudo apt install libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 \
         libqt5concurrent5 qttools5-dev-tools qttools5-dev
 
 **Qt6:**
+
 .. code-block:: bash
+
     sudo apt install qt6-base qt6-tools-dev-tools qt6-tools-dev qt6-svg
 
 

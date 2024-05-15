@@ -637,12 +637,6 @@ MainWindow::~MainWindow()
             SLOT(addLastCommand(QString)));
     }
 
-    /*    if (m_pythonMessageDock && m_console)
-        {
-            disconnect(m_console, SIGNAL(sendToPythonMessage(QString)), m_pythonMessageDock,
-       SLOT(addPythonMessage(QString)));
-        }*/
-
     DELETE_AND_SET_NULL(m_pAIManagerWidget);
     DELETE_AND_SET_NULL(m_fileSystemDock);
     DELETE_AND_SET_NULL(m_helpDock);
@@ -856,16 +850,6 @@ void MainWindow::scriptStatusBarInformationChanged(
             m_pStatusLblScriptInfo->setText("");
         }
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::connectPythonMessageBox(QListWidget* pythonMessageBox)
-{
-    connect(
-        m_console,
-        SIGNAL(sendToPythonMessage(QString)),
-        pythonMessageBox,
-        SLOT(addNewMessage(QString)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
