@@ -1,7 +1,7 @@
 .. include:: ../include/global.inc
 .. _build_cmake_vars_list:
 
-List of common **cmake** Variables and Environment Variables used in the |itom| project
+List of common CMake Variables and Environment Variables used in the Itom project
 =======================================================================================
 
 This chapter is to hold lots of common CMAKE Variables and System Environment variables,
@@ -35,8 +35,8 @@ to change the environment variables permanently use:
 
    setx <VARIABLE_NAME> <Value>
 
-In general it is recomended to use the system environment variables, because they can
-be reused permanently and are used to set during the internal cmake confguration
+In general it is recommended to use the system environment variables, because they can
+be reused permanently and are used to set during the internal cmake configuration
 to define the correct location of the cmake modules and configurations scripts, which
 in turn define the set of Cmake Variables.
 
@@ -53,7 +53,7 @@ Environment Variables:
 
 .. |cmakelist_itom_sdk_root| replace::
 
-   Path to the build ITOM SDK Path, as created after a succesfull |Itom| build.
+   Path to the build ITOM SDK Path, as created after a successful |Itom| build.
    (e.g. <Itom_BuildFolder>/SDK). Should be set manually if ITOM is not build
    outside of the proposed build structure.
 
@@ -72,67 +72,68 @@ Environment Variables:
 
 .. |cmakelist_boost_root| replace::
 
-   Path to the boost build folder.
+   Path to the boost build folder (e.g. <BOOST_BuildFolder>).
 
 .. |cmakelist_flann_root| replace::
 
-   Path to the flann build folder.
+   Path to the flann build folder (e.g. <FLANN_BuildFolder>).
 
 .. |cmakelist_vtk_root| replace::
 
    The folder in the vtk module containing VTKConfig.cmake
+   (e.g.  <VTK_BuildFolder>\lib\cmake\vtk-#.# )
    or VTKConfigVersion.cmake, highly depending on the vtk version you are using.
    On Linux Systems you need to separately install vtk-dev(even if it does not
    fit the version you want to use) for one or two headers that are missing otherwise...
 
 .. |cmakelist_eigen_root| replace::
 
-   Path to the eigen build folder.
+   Path to the eigen build folder (e.g. <EIGEN_BuildFolder>).
 
 .. |cmakelist_pcl_root| replace::
 
-   Path to the pcl build folder.
+   Path to the pcl build folder (e.g. <PCL_BuildFolder>\PCL1.12.0\cmake).
 
 .. |cmakelist_libusb_root| replace::
 
-   Path to the libusb build folder.
+   Path to the libusb build folder (e.g. <LIBUSB_BuildFolder>).
 
 .. |cmakelist_fftw_root| replace::
 
-   Path to the fftw build folder.
+   Path to the fftw build folder (e.g. <FFTW_BuildFolder>).
 
 +-------------------+-------------------------------------------------------+
 | Env. Variable     | Description                                           |
 +===================+=======================================================+
 | **ITOM_SDK_ROOT** | |cmakelist_itom_sdk_root|                             |
-+---------------------------------------------------------------------------+
++-------------------+-------------------------------------------------------+
 | **QT_ROOT**       | |cmakelist_qt_root|                                   |
-+---------------------------------------------------------------------------+
++-------------------+-------------------------------------------------------+
 | **PYTHON_ROOT**   | |cmakelist_python_root|                               |
-+---------------------------------------------------------------------------+
++-------------------+-------------------------------------------------------+
 | **OPENCV_ROOT**   | |cmakelist_opencv_root|                               |
-+---------------------------------------------------------------------------+
++-------------------+-------------------------------------------------------+
 | **BOOST_ROOT**    | |cmakelist_boost_root|                                |
-+---------------------------------------------------------------------------+
++-------------------+-------------------------------------------------------+
 | **FLANN_ROOT**    | |cmakelist_flann_root|                                |
-+---------------------------------------------------------------------------+
++-------------------+-------------------------------------------------------+
 | **VTK_ROOT**      | |cmakelist_vtk_root|                                  |
-+---------------------------------------------------------------------------+
++-------------------+-------------------------------------------------------+
 | **EIGEN_ROOT**    | |cmakelist_eigen_root|                                |
-+---------------------------------------------------------------------------+
++-------------------+-------------------------------------------------------+
 | **PCL_ROOT**      | |cmakelist_pcl_root|                                  |
-+---------------------------------------------------------------------------+
++-------------------+-------------------------------------------------------+
 | **LIBUSB_ROOT**   | |cmakelist_libusb_root|                               |
-+---------------------------------------------------------------------------+
++-------------------+-------------------------------------------------------+
 | **FFTW_ROOT**     | |cmakelist_fftw_root|                                 |
-+---------------------------------------------------------------------------+
++-------------------+-------------------------------------------------------+
 
 Cmake Variables:
 ----------------
 
 .. |cmakelist_Itom_SDK_DIR| replace::
 
-   Path to the build ITOM SDK Path, as created after a succesfull |Itom| build.
+   Path to the build ITOM SDK Path, as created after a successful |Itom| build.
    (e.g. <Itom_BuildFolder>/SDK). Should be set manually if ITOM is not build
    outside of the proposed build structure.
 
@@ -231,7 +232,7 @@ Cmake Variables:
 | **Qt_Prefix_DIR**          | |cmakelist_Qt_Prefix_DIR|                  |
 +----------------------------+--------------------------------------------+
 | **Python_ROOT_DIR**        | |cmakelist_Python_ROOT_DIR|                |
-+-------------------------------------------------------------------------+
++----------------------------+--------------------------------------------+
 | **BUILD_QTVERSION**        | |cmakelist_build_qtversion|                |
 +----------------------------+--------------------------------------------+
 | **OpenCV_DIR**             | |cmakelist_opencv_dir|                     |
