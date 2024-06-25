@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="de">
+<TS version="2.1" language="de_DE">
 <context>
     <name>QObject</name>
     <message>
@@ -526,8 +526,16 @@
     </message>
     <message>
         <location filename="../paramHelper.cpp" line="2629"/>
+        <source>Parameter is no array type. Indexing not possible.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Paramater is no array type. Indexing not possible.</source>
-        <translation type="unfinished">Der Parameter ist nicht vom Typ Array. Ein Indizierung ist nicht möglich.</translation>
+        <translation type="obsolete">Der Parameter ist nicht vom Typ Array. Ein Indizierung ist nicht möglich.</translation>
+    </message>
+    <message>
+        <source>Paramater is no array type. Indexing not possible.</source>
+        <translation type="obsolete">Der Parameter ist nicht vom Typ Array. Ein Indizierung ist nicht möglich.</translation>
     </message>
     <message>
         <location filename="../paramHelper.cpp" line="2657"/>

@@ -22,6 +22,7 @@ cmake_minimum_required(VERSION 3.12...3.29)
 
 message(
     STATUS "------------------- PROJECT itom ---------------------")
+
 # Retrieve Version Number and Identifier from GIT-TAG
 include(cmake/VersionFromGit.cmake)
 version_from_git(
@@ -169,12 +170,18 @@ itom_define_sdk_compiler()
 find_package(OpenCV QUIET)
 string(REPLACE . "" OpenCV_LIB_VERSION ${OpenCV_VERSION})
 
-find_package(VTK QUIET)
-string(REGEX MATCH "([0-9]+\.[0-9]+)" VTK_LIB_VERSION ${VTK_VERSION})
+if(BUILD_WITH_PCL)
+    find_package(VTK QUIET)
+    string(REGEX MATCH "([0-9]+\.[0-9]+)" VTK_LIB_VERSION ${VTK_VERSION})
+endif(BUILD_WITH_PCL)
 
 find_package(Python QUIET)
 string(REGEX MATCH "([0-9]+\.[0-9]+)" Python_LIB_VERSION ${Python_VERSION})
 string(REPLACE . "" Python_LIB_VERSION ${Python_LIB_VERSION})
+
+message(STATUS "itom_VERSION_IDENTIFIERS: ${itom_VERSION_IDENTIFIERS}")
+message(STATUS "itom_VERSION: ${itom_VERSION}")
+
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in
     ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )

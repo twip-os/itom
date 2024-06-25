@@ -77,6 +77,8 @@
         <file>icons/itomicon/splashScreen4.png</file>
         <file>icons/itomicon/splashScreen4Easter.png</file>
         <file>icons/itomicon/splashScreen4dev.png</file>
+        <file>icons/itomicon/splashScreen4devChristmas.png</file>
+        <file>icons/itomicon/splashScreen4devEaster.png</file>
         <file alias="icons/customSplashScreen.png">@SPLASH_SCREEN_CUSTOM_IMAGE_REL@</file>
         <file alias="icons/customAppIcon.png">@CUSTOM_APP_ICON_REL@</file>
         <file>icons/empty.png</file>
