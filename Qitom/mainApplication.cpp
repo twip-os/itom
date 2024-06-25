@@ -137,11 +137,12 @@ MainApplication::MainApplication(tGuiType guiType) :
     QCoreApplication::setOrganizationName("twip optical solutions GmbH");
     QCoreApplication::setApplicationName("twip itom");
     QCoreApplication::setApplicationVersion(ITOM_VERSION_STR);
-    if(ITOM_ADDITIONAL_EDITION_NAME == "")
+
+    if(QByteArray(ITOM_ADDITIONAL_EDITION_NAME) == "")
     {
-        if(ITOM_VERSION_STR == "0.0.0" || ITOM_VERSION_IDENTIFIERS == "dev" )
+        if(QByteArray(ITOM_VERSION_STR) == "0.0.0" || QByteArray(ITOM_VERSION_IDENTIFIERS) == "dev" )
         {
-            devFlag = true;
+            m_devFlag = true;
         }
     }
 
@@ -237,7 +238,7 @@ QString MainApplication::getSplashScreenFileName() const
 
 	qint64 daysDiffToEaster = currentDate.toJulianDay() - QDate(currentYear, easterMonth, easterDay).toJulianDay();
 
-    if( !devFlag )
+    if( !m_devFlag )
     {
         if (currentMonth == 12)
         {
@@ -253,8 +254,23 @@ QString MainApplication::getSplashScreenFileName() const
         {
             fileName = ":/application/icons/itomicon/splashScreen4.png";
         }
-    }else{
-        fileName = ":/application/icons/itomicon/splashScreen4dev.png";
+    }
+    else
+    {
+        if (currentMonth == 12)
+        {
+            //Christmas splashScreen whole december of each year
+            fileName = ":/application/icons/itomicon/splashScreen4devChristmas.png";
+        }
+        else if (qAbs(daysDiffToEaster) <= 7)
+        {
+            //Easter splashScreen one week before and after easter day
+            fileName = ":/application/icons/itomicon/splashScreen4devEaster.png";
+        }
+        else //default splashScreen
+        {
+            fileName = ":/application/icons/itomicon/splashScreen4dev.png";
+        }
     }
 
     return fileName;
@@ -559,7 +575,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen, const Q
     settings->endGroup();
 
     QLocale localLanguage;
-    
+
     // language can be "language[_territory][.codeset][@modifier]" or "operatingsystem".
     // In the last case, the default language of the operating system is used.
     if (language.compare("operatingsystem", Qt::CaseInsensitive) == 0)
