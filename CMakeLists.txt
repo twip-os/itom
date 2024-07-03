@@ -44,9 +44,9 @@ set_property( DIRECTORY PROPERTY VS_STARTUP_PROJECT "qitom" )
 message(STATUS "--------------- PROJECT itom -----------------")
 
 set(ITOM_3RDPARTYFOLDER CACHE PATH 
-    "Path to the AIO 3rdParty Folder, containing cmake/itom_3rdParty.cmake")
+    "Path to the AIO 3rdParty Folder, containing cmake_scripts/itom_3rdParty.cmake")
 if(ITOM_3RDPARTYFOLDER)
-    include(${ITOM_3RDPARTYFOLDER}/cmake/itom_3rdParty.cmake)
+    include(${ITOM_3RDPARTYFOLDER}/cmake_scripts/itom_3rdParty.cmake)
 endif()
 set(ITOM_3RDPARTYPCLFOLDER CACHE PATH 
     "Path to the AIO 3rdPartyPCL Folder, containing cmake/itom_3rdPartyPCL.cmake")
