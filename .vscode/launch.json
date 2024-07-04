@@ -1,0 +1,50 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Raspi Display",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/home/pi/transportoDevelop/build/itom/qitom",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}",// "${fileDirname}", Don't know anymore what this is needed for
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "Debug Remote Display",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/home/pi/transportoDevelop/build/itom/qitom",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}",// "${fileDirname}", Don't know anymore what this is needed for
+            "environment": [
+                {
+                    "name": "DISPLAY",
+                    "value": "${env:DISPLAY}"
+                }
+            ],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}
