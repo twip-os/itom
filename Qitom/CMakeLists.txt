@@ -1082,10 +1082,6 @@ if(MSVC)
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../symbols/dll )
 endif()
 
-# set the path to the twip pythonPackages
-set(PYTHONPATH_REL "${CMAKE_CURRENT_SOURCE_DIR}/../../../pythonPackages")
-get_filename_component(PYTHONPATH ${PYTHONPATH_REL} ABSOLUTE)
-
 #ADD a batch file for itom-release
 if(MSVC)
     configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/../itom.bat.in ${CMAKE_CURRENT_BINARY_DIR}/../itom.bat )
@@ -1119,6 +1115,6 @@ set(DEBUG_PATH  "PATH=${QT_BINARY_DIR}"
 set_target_properties(${PROJECT_NAME} PROPERTIES
     VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
     VS_DEBUGGER_COMMAND           "$<TARGET_FILE:${PROJECT_NAME}>"
-    VS_DEBUGGER_ENVIRONMENT       "${DEBUG_PATH}\nPYTHONPATH=${PYTHONPATH}"
+    VS_DEBUGGER_ENVIRONMENT       "${DEBUG_PATH}"
     # this does only work when build/itom/Qitom/qitom.vcxproj.user does not exist
 )
