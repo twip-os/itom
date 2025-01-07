@@ -1788,7 +1788,7 @@ void ScriptDockWidget::createActions()
     m_scriptDebugAction->connectTrigger(this, SLOT(mnuScriptDebug()));
 
     m_scriptStopAction = new ShortcutAction(QIcon(":/script/icons/stopScript.png"), tr("Stop"),
-        this, QKeySequence(tr("Shift+F5", "QShortcut")), Qt::WidgetShortcut, Qt::WidgetWithChildrenShortcut);
+        this, QKeySequence(tr("Shift+F5", "QShortcut")), Qt::WidgetShortcut, Qt::WidgetWithChildrenShortcut); //TODO
     m_scriptStopAction->connectTrigger(this, SLOT(mnuScriptStop()));
 
     m_scriptContinueAction = new ShortcutAction(QIcon(":/script/icons/continue.png"), tr("Continue"),
@@ -1931,16 +1931,6 @@ void ScriptDockWidget::createMenus()
     m_fileMenu->addSeparator();
     m_fileMenu->addAction(m_tabCloseAction->action());
     m_fileMenu->addAction(m_tabCloseAllAction->action());
-
-//    m_viewMenu = getMenuBar()->addMenu(tr("&View"));
-//    m_viewMenu->addAction();
-/*    QMenu *dockWidgets = createPopupMenu();
-    if (dockWidgets)
-    {
-        dockWidgets->menuAction()->setIcon(QIcon(":/application/icons/preferences-general.png"));
-        dockWidgets->menuAction()->setText(tr("Toolboxes"));
-        m_viewMenu->addMenu(dockWidgets);
-    }*/
 
     m_editMenu = getMenuBar()->addMenu(tr("&Edit"));
     m_editMenu->addAction(m_undoAction->action());
@@ -2791,6 +2781,27 @@ void ScriptDockWidget::closeEvent(QCloseEvent *event)
         event->accept();
         emit statusBarInformationChanged(this, "", -1, -1);
         emit (removeAndDeleteScriptDockWidget(this));
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::mousePressEvent(QMouseEvent* e)
+{
+    auto* scriptEditorOrganizer =
+        qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+    if (e->button() == Qt::BackButton)
+    {
+        if (scriptEditorOrganizer)
+        {
+            scriptEditorOrganizer->navigateBackward();
+        }
+    }
+    else if (e->button() == Qt::ForwardButton)
+    {
+        if (scriptEditorOrganizer)
+        {
+            scriptEditorOrganizer->navigateForward();
+        }
     }
 }
 

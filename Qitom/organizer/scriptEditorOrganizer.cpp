@@ -97,19 +97,21 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable) :
     }
 
     QAction *a = m_commonScriptEditorActions.actNavigationForward = new QAction(QIcon(":/editor/icons/navigateForward.png"), tr("Navigate Forward"), this);
-    connect(a, SIGNAL(triggered()), this, SLOT(mnuNavigateForward()));
+    connect(a, SIGNAL(triggered()), this, SLOT(navigateForward()));
     a->setEnabled(false);
 
     m_pGoBackNavigationMenu = new QMenu();
 
     a = m_commonScriptEditorActions.actNavigationBackward = new QAction(QIcon(":/editor/icons/navigateBackward.png"), tr("Navigate Backward"), this);
-    connect(a, SIGNAL(triggered()), this, SLOT(mnuNavigateBackward()));
+    connect(a, SIGNAL(triggered()), this, SLOT(navigateBackward()));
     a->setMenu(m_pGoBackNavigationMenu);
     a->setEnabled(false);
 
     m_pBookmarkModel = new ito::BookmarkModel();
     m_pBookmarkModel->restoreState(); //get bookmarks from last session
     connect(m_pBookmarkModel, SIGNAL(gotoBookmark(BookmarkItem)), this, SLOT(onGotoBookmark(BookmarkItem)));
+
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -382,20 +384,12 @@ void ScriptEditorOrganizer::fileOpenedOrSaved(const QString &filename)
 */
 ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked, Qt::DockWidgetArea area /*=Qt::TopDockWidgetArea*/, const QString &objectName /*= QString()*/)
 {
-    ScriptDockWidget* newWidget;
-
-    //QWidget *mainWin = qobject_cast<QWidget*>(AppManagement::getMainWindow());
-
     docked = docked && m_dockAvailable;
-    if (docked && this->getFirstDockedElement() != NULL)
-    {
-        docked = false;
-    }
 
-    newWidget = new ScriptDockWidget(tr("Script Editor"), "",
+    auto newWidget = new ScriptDockWidget(tr("Script Editor"), "",
                                     docked, m_dockAvailable,
                                     m_commonScriptEditorActions, m_pBookmarkModel,
-                                    NULL /*mainWin*/); //parent will be set later by addScriptDockWidgetToMainWindow signal
+                                    nullptr /*mainWin*/); //parent will be set later by addScriptDockWidgetToMainWindow signal
 
     connect(newWidget, SIGNAL(addGoBackNavigationItem(GoBackNavigationItem)), this, SLOT(onAddGoBackNavigationItem(GoBackNavigationItem)));
 
@@ -1189,7 +1183,7 @@ void ScriptEditorOrganizer::onAddGoBackNavigationItem(const GoBackNavigationItem
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ScriptEditorOrganizer::mnuNavigateBackward()
+void ScriptEditorOrganizer::navigateBackward()
 {
     if (m_goBackNavigationIndex > 0)
     {
@@ -1198,7 +1192,7 @@ void ScriptEditorOrganizer::mnuNavigateBackward()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ScriptEditorOrganizer::mnuNavigateForward()
+void ScriptEditorOrganizer::navigateForward()
 {
     if (m_goBackNavigationIndex < m_goBackNavigationHistory.size() - 1)
     {

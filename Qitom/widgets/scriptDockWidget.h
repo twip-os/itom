@@ -141,6 +141,7 @@ protected:
     void createToolBars();
     void createStatusBar();
     void closeEvent(QCloseEvent* event);
+    virtual void mousePressEvent(QMouseEvent* e);
     virtual void windowStateChanged(bool windowNotToolbox);
 
     RetVal closeTab(int index, bool saveFirst = true, bool closeScriptWidgetIfLastTabClosed = true);
@@ -221,7 +222,6 @@ private:
     QMenu* m_tabContextMenu;
     QMenu* m_fileMenu;
     QMenu* m_lastFilesMenu;
-    QMenu* m_viewMenu;
     QMenu* m_editMenu;
     QMenu* m_scriptMenu;
     QMenu* m_winMenu;

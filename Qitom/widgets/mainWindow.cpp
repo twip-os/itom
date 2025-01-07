@@ -395,7 +395,8 @@ MainWindow::MainWindow() :
 
         if (m_console)
         {
-            connect(pyEngine, SIGNAL(clearCommandLine()), m_console, SLOT(clearCommandLine()));
+            connect(pyEngine, &PythonEngine::clearCommandLine, m_console, &ConsoleWidget::clearCommandLine);
+            connect(pyEngine, &PythonEngine::interruptCommandInput, m_console, &ConsoleWidget::interruptCommandInput);
             connect(
                 pyEngine,
                 SIGNAL(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*)),

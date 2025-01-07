@@ -2737,13 +2737,15 @@ void PythonEngine::pythonCodeCheck(const QString &code, const QString &filename,
                 QMetaObject::invokeMethod(s, callbackFctName.constData(), Q_ARG(QList<ito::CodeCheckerItem>, codeCheckerItems));
             }
         }
-#ifdef _DEBUG
         else if (!result)
         {
+#ifdef _DEBUG
             std::cerr << "Error when calling the syntax check module of python\n" << std::endl;
             PyErr_PrintEx(0);
-        }
+#else
+            PyErr_Clear();
 #endif
+        }
 
         Py_XDECREF(result);
 
@@ -3187,11 +3189,7 @@ void PythonEngine::setLocalDictionary(PyObject* localDict)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonRunString(QString cmd)
 {
-    if (cmd.trimmed().startsWith("#"))
-    {
-        cmd.prepend("pass"); //a single command line leads to an error while execution
-    }
-    //ba.replace("\\n",QByteArray(1,'\n')); //replace \n by ascii(10) in order to realize multi-line evaluations
+    cmd = modifyCommandStringInCaseOfSpecialComments(cmd);
 
     switch (m_pythonState)
     {
@@ -3283,10 +3281,7 @@ void PythonEngine::pythonDebugFile(QString filename)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonDebugString(QString cmd)
 {
-    if (cmd.trimmed().startsWith("#"))
-    {
-        cmd.prepend("pass"); //a single comment while cause an error in python
-    }
+    cmd = modifyCommandStringInCaseOfSpecialComments(cmd);
 
     switch (m_pythonState)
     {
@@ -3310,13 +3305,41 @@ void PythonEngine::pythonDebugString(QString cmd)
     }
 }
 
+//--------------------------------------------------------------------------------------
+/* if a single command line or a multi-block line is executed, Python will
+* raise a SyntaxError, if comment lines exist at special positions. To avoid
+* this, some modifications are optionally done here.
+*/
+QString PythonEngine::modifyCommandStringInCaseOfSpecialComments(const QString& command)
+{
+    QString cmd = command;
+
+    if (cmd.trimmed().startsWith("#"))
+    {
+        cmd.prepend("pass"); //a single comment line leads to an error while execution
+    }
+
+    int lastLineBreakIdx = cmd.lastIndexOf("\n");
+
+    if (lastLineBreakIdx >= 0)
+    {
+        QString lastCmd = cmd.mid(lastLineBreakIdx + 1);
+
+        if (lastCmd.trimmed().startsWith("#"))
+        {
+            // a command line in the last line of the block can lead to an error.
+            // Insert an empty line at the end
+            cmd.append("\n");
+        }
+    }
+
+    return cmd;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
 {
-    if (cmd.trimmed().startsWith("#"))
-    {
-        cmd.prepend("pass"); //a single command line leads to an error while execution
-    }
+    cmd = modifyCommandStringInCaseOfSpecialComments(cmd);
 
     switch (m_pythonState)
     {
@@ -4644,20 +4667,28 @@ int PythonEngine::queuedInterrupt(void* /*arg*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonInterruptExecutionThreadSafe(bool *interruptActuatorsAndTimers /*= NULL*/)
 {
-    // only queue the interrupt event if not yet done.
-    // ==operator(int) of QAtomicInt does not exist for all versions of Qt5.
-    //testAndSetRelaxed returns true, if the value was 0 (and assigns one to it)
-    if (m_interruptCounter.testAndSetRelaxed(0, 1))
+    if (isPythonDebugging() && isPythonDebuggingAndWaiting())
     {
-        if (isPythonDebugging() && isPythonDebuggingAndWaiting())
+        m_dbgCmdMutex.lock();
+
+        if (m_debugCommandQueue.size() == 0 || m_debugCommandQueue[0] != ito::pyDbgQuit)
         {
-            m_dbgCmdMutex.lock();
             m_debugCommandQueue.insert(0, ito::pyDbgQuit);
-            m_dbgCmdMutex.unlock();
         }
-        else
+
+        m_dbgCmdMutex.unlock();
+    }
+    else
+    {
+        // only queue the interrupt event if not yet done.
+        // ==operator(int) of QAtomicInt does not exist for all versions of Qt5.
+        //testAndSetRelaxed returns true, if the value was 0 (and assigns one to it)
+        if (m_interruptCounter.testAndSetRelaxed(0, 1))
         {
             int result = Py_AddPendingCall(&PythonEngine::queuedInterrupt, NULL);
+
+            // if an input command is currently running, it can only be interrupted by this:
+            emit interruptCommandInput();
         }
     }
 
@@ -6739,12 +6770,16 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
 
             PyDict_Clear(exportDict);
             Py_DECREF(exportDict);
-            exportDict = NULL;
-
+            exportDict = nullptr;
+            Py_XDECREF(item);
             PyGILState_Release(gstate);
         }
-
-        Py_XDECREF(item);
+        else
+        {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+            Py_XDECREF(item);
+            PyGILState_Release(gstate);
+        }
 
         if (oldState & pyStateIdle)
         {
