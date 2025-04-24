@@ -760,6 +760,7 @@ set(qitom_SOURCES
     #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/msgno.c
     #${CMAKE_CURRENT_SOURCE_DIR}/textdiff/suba.c
     ${CMAKE_CURRENT_SOURCE_DIR}/textdiff/varray.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../misc/itom.natvis
 )
 
 if(MSVC)
