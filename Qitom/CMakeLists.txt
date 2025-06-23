@@ -485,6 +485,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/autoindent.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/caretLineHighlight.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/errorLineHighlight.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/codeCellHighlight.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/lineBackgroundMarker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/indenter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/occurrences.h
@@ -699,6 +700,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/outlineSelectorWidget.cpp
@@ -734,6 +736,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/caretLineHighlight.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/errorLineHighlight.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/lineBackgroundMarker.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/codeCellHighlight.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/indenter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/occurrences.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codeEditor/modes/pyAutoIndent.cpp
