@@ -1,3 +1,17 @@
+<!--
+Modified version of qitom.qrc by twip optical solutions GmbH (https://www.twip-os.com).
+This is used to generate qitom.qrc. The modifications are listed below and the whole
+project is hosted on https://github.com/twip-os/itom.
+The original version of this software can be found at
+https://github.com/itom-project/itom.
+
+The modified software is still subject to the terms of the GNU Lesser General Public
+License (LGPL), version 2.0.
+
+Modifications:
+10.04.2024  Renamed to qitom.qrc.in and added SPLASH_SCREEN_CUSTOM_IMAGE_REL and
+            CUSTOM_APP_ICON_REL to be replaced by the correct paths by CMake.
+-->
 <RCC>
     <qresource prefix="/helpTreeDockWidget">
         <file alias="actuator_page">styles/help/actuator_page.html</file>

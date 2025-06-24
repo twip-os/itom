@@ -3,6 +3,14 @@
 # Copyright (C) 2025, Institut für Technische Optik (ITO),
 # Universität Stuttgart, Germany
 #
+# Modified by twip optical solutions GmbH (https://www.twip-os.com). The modifications
+# are listed below and the whole project is hosted on https://github.com/twip-os/itom.
+# The original version of this software can be found at
+# https://github.com/itom-project/itom.
+#
+# The modified software is still subject to the terms of the GNU Lesser General Public
+# License (LGPL), version 2.0.
+#
 # This file is part of itom and its software development toolkit (SDK).
 #
 # itom is free software; you can redistribute it and/or modify it
@@ -17,6 +25,11 @@
 #
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
+#
+# Modifications:
+# 22.06.2020    Added support for 3rdParty folders.
+# 20.07.2022    Set qitom as startup project and debugging environment in CMakeLists.
+# 03.07.2024    Updated paths to 3rdParty folders.
 
 cmake_minimum_required(VERSION 3.12...3.29)
 
@@ -42,12 +55,12 @@ set_property( DIRECTORY PROPERTY VS_STARTUP_PROJECT "qitom" )
 
 message(STATUS "--------------- PROJECT itom -----------------")
 
-set(ITOM_3RDPARTYFOLDER CACHE PATH 
+set(ITOM_3RDPARTYFOLDER CACHE PATH
     "Path to the AIO 3rdParty Folder, containing cmake_scripts/itom_3rdParty.cmake")
 if(ITOM_3RDPARTYFOLDER)
     include(${ITOM_3RDPARTYFOLDER}/cmake_scripts/itom_3rdParty.cmake)
 endif()
-set(ITOM_3RDPARTYPCLFOLDER CACHE PATH 
+set(ITOM_3RDPARTYPCLFOLDER CACHE PATH
     "Path to the AIO 3rdPartyPCL Folder, containing cmake/itom_3rdPartyPCL.cmake")
 if(ITOM_3RDPARTYPCLFOLDER)
     include(${ITOM_3RDPARTYPCLFOLDER}/cmake/itom_3rdPartyPCL.cmake)

@@ -3,6 +3,14 @@
 # Copyright (C) 2020, Institut für Technische Optik (ITO),
 # Universität Stuttgart, Germany
 #
+# Modified by twip optical solutions GmbH (https://www.twip-os.com). The modifications
+# are listed below and the whole project is hosted on https://github.com/twip-os/itom.
+# The original version of this software can be found at
+# https://github.com/itom-project/itom.
+#
+# The modified software is still subject to the terms of the GNU Lesser General Public
+# License (LGPL), version 2.0.
+#
 # This file is part of itom and its software development toolkit (SDK).
 #
 # itom is free software; you can redistribute it and/or modify it
@@ -17,6 +25,14 @@
 #
 # You should have received a copy of the GNU Library General Public License
 # along with itom. If not, see <http://www.gnu.org/licenses/>.
+#
+# Modifications:
+# 20.07.2022    Set VS_DEBUGGER_ENVIRONMENT.
+# 28.07.2023    Corrected Python_ROOT_DIR in DEBUG_PATH.
+# 10.04.2024    Added CUSTOM_APP_ICON and SPLASH_SCREEN configurations.
+# 04.07.2024    Removed PYTHONPATH from VS_DEBUGGER_ENVIRONMENT.
+# 05.02.2025    Corrected OpenCV_DIR in DEBUG_PATH.
+# 24.04.2025    Added the itom.natvis file to qitom_SOURCES.
 
 cmake_minimum_required(VERSION 3.12...3.29)
 set(target_name qitom)

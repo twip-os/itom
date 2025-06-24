@@ -4,6 +4,14 @@
     Copyright (C) 2020, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
+    Modified by twip optical solutions GmbH (https://www.twip-os.com). The modifications
+    are listed below and the whole project is hosted on https://github.com/twip-os/itom.
+    The original version of this software can be found at
+    https://github.com/itom-project/itom.
+
+    The modified software is still subject to the terms of the GNU Lesser General Public
+    License (LGPL), version 2.0.
+
     This file is part of itom.
 
 
@@ -19,6 +27,10 @@
 
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
+
+    Modifications:
+    14.12.2023  Adding possibility for USEAPPICON.
+    10.04.2024  Using qrc file and rename to USE_CUSTOM_APP_ICON.
 *********************************************************************** */
 
 #include "../python/pythonEngineInc.h"

@@ -4,6 +4,14 @@
     Copyright (C) 2023, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
+    Modified by twip optical solutions GmbH (https://www.twip-os.com). The modifications
+    are listed below and the whole project is hosted on https://github.com/twip-os/itom.
+    The original version of this software can be found at
+    https://github.com/itom-project/itom.
+
+    The modified software is still subject to the terms of the GNU Lesser General Public
+    License (LGPL), version 2.0.
+
     This file is part of itom.
 
     itom is free software; you can redistribute it and/or modify it
@@ -18,6 +26,9 @@
 
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
+
+    Modifications:
+    4.12.2026   Added getSplashScreenTextColor.
 *********************************************************************** */
 
 #pragma once
