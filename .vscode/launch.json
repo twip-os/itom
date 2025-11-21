@@ -54,7 +54,7 @@
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
-            "environment": [{"name": "PATH", "value": "C:/consignoDevelop/build/itom;C:/consignoDevelop/3rdParty/Qt6.5/6.5.3/msvc2019_64/bin;C:/consignoDevelop/3rdParty/OpenCV4.9.0/x64/vc17/lib/../bin;C:/consignoDevelop/3rdPartyPCL/PCL1.13.0/cmake/../bin;C:/consignoDevelop/3rdParty/Python;;C:/consignoDevelop/3rdPartyPCL/VTK9.2.2/lib/cmake/vtk-9.2/../../../bin;%PATH%"}],
+            "environment": [{"name": "PATH", "value": "C:/Develop/consignoDevelop/build/itom;C:/Develop/consignoDevelop/3rdParty/Qt6.5/6.5.3/msvc2019_64/bin;C:/Develop/consignoDevelop/3rdParty/OpenCV4.9.0/x64/vc17/lib/../bin;C:/Develop/consignoDevelop/3rdPartyPCL/PCL1.13.0/cmake/../bin;C:/Develop/consignoDevelop/3rdParty/Python;;C:/Develop/consignoDevelop/3rdPartyPCL/VTK9.2.2/lib/cmake/vtk-9.2/../../../bin;%PATH%"}],
             "console": "integratedTerminal",
             "visualizerFile": "${workspaceFolder}/../../3rdParty/qt6.natvis"
         }
