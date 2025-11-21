@@ -14,7 +14,8 @@
                 "SPLASH_SCREEN_CUSTOM_IMAGE": "${sourceDir}/../../misc/styles_and_settings/splashScreenDesktop.png",
                 "SPLASH_SCREEN_TEXT_COLOR": "0xFF000000",
                 "SPLASH_SCREEN_TEXT_POSITION_HORIZONTAL": "0.4",
-                "SPLASH_SCREEN_TEXT_POSITION_VERTICAL": "0.7"
+                "SPLASH_SCREEN_TEXT_POSITION_VERTICAL": "0.7",
+                "INCLUDE_NATVIS": true
             }
         },
         {
@@ -63,7 +64,8 @@
                 "SPLASH_SCREEN_CUSTOM_IMAGE": null,
                 "SPLASH_SCREEN_TEXT_COLOR": null,
                 "SPLASH_SCREEN_TEXT_POSITION_HORIZONTAL": null,
-                "SPLASH_SCREEN_TEXT_POSITION_VERTICAL": null
+                "SPLASH_SCREEN_TEXT_POSITION_VERTICAL": null,
+                "INCLUDE_NATVIS": false
             }
         },
         {
